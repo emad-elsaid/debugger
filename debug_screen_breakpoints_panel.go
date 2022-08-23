@@ -44,6 +44,8 @@ func (b *BreakpointsPanel) BreakpointsPanel(d *Debugger) W {
 		return breakpoints[i].ID < breakpoints[j].ID
 	})
 
+	IconFont := FontEnlarge(2)
+
 	elem := func(c C, i int) D {
 		r := breakpoints[i]
 		id := fmt.Sprintf("breakpoint-%d", r.ID)
@@ -53,14 +55,14 @@ func (b *BreakpointsPanel) BreakpointsPanel(d *Debugger) W {
 		delClick := func() { d.ClearBreakpoint(r) }
 
 		return Columns(
-			Rigid(Checkbox(id, !r.Disabled, click)),
+			Rigid(IconFont(Checkbox(id, !r.Disabled, click))),
 			Flexed(1,
 				Rows(
 					Rigid(Label(r.Name)),
 					Rigid(Wrap(Text(fmt.Sprintf("%s:%d", r.File, r.Line)), TextColor(SecondaryTextColor), MaxLines(3))),
 				),
 			),
-			Rigid(OnClick(delId, IconDelete, delClick)),
+			Rigid(OnClick(delId, IconFont(IconDelete), delClick)),
 		)(c)
 	}
 
@@ -85,11 +87,13 @@ func (b *BreakpointsPanel) Toolbar(d *Debugger) W {
 		d.ClearAllBreakpoints()
 	}
 
+	IconFont := FontEnlarge(2)
+
 	return Background(ToolbarBgColor,
 		Columns(
-			Rigid(ToolbarButton(&b.EnableAll, IconBreakPoint, "Enable All")),
-			Rigid(ToolbarButton(&b.DisableAll, IconBreakPointDisabled, "Disable All")),
-			Rigid(ToolbarButton(&b.ClearAll, IconDelete, "Clear All")),
+			Rigid(ToolbarButton(&b.EnableAll, IconFont(IconBreakPoint), "Enable All")),
+			Rigid(ToolbarButton(&b.DisableAll, IconFont(IconBreakPointDisabled), "Disable All")),
+			Rigid(ToolbarButton(&b.ClearAll, IconFont(IconDelete), "Clear All")),
 		),
 	)
 }

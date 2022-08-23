@@ -84,7 +84,7 @@ func (t *Toolbar) Layout(d *Debugger) W {
 	}
 	if showStop {
 		btns = append(btns,
-			Rigid(ToolbarButton(&t.StopBtn, IconStop, "Stop")),
+			Rigid(ToolbarButton(&t.StopBtn, IconSize(IconStop), "Stop")),
 		)
 	}
 
@@ -93,7 +93,7 @@ func (t *Toolbar) Layout(d *Debugger) W {
 	}
 	if showRestart {
 		btns = append(btns,
-			Rigid(ToolbarButton(&t.RestartBtn, IconRestart, "Restart")),
+			Rigid(ToolbarButton(&t.RestartBtn, IconSize(IconRestart), "Restart")),
 		)
 	}
 
@@ -102,7 +102,7 @@ func (t *Toolbar) Layout(d *Debugger) W {
 	}
 	if showCont {
 		btns = append(btns,
-			Rigid(ToolbarButton(&t.ContinueBtn, IconContinue, "Continue")),
+			Rigid(ToolbarButton(&t.ContinueBtn, IconSize(IconContinue), "Continue")),
 		)
 	}
 
@@ -111,7 +111,7 @@ func (t *Toolbar) Layout(d *Debugger) W {
 	}
 	if showStepOut {
 		btns = append(btns,
-			Rigid(ToolbarButton(&t.StepOutBtn, IconStepOut, "Step out")),
+			Rigid(ToolbarButton(&t.StepOutBtn, IconSize(IconStepOut), "Step out")),
 		)
 	}
 
@@ -120,7 +120,7 @@ func (t *Toolbar) Layout(d *Debugger) W {
 	}
 	if showNext {
 		btns = append(btns,
-			Rigid(ToolbarButton(&t.NextBtn, IconNext, "Next")),
+			Rigid(ToolbarButton(&t.NextBtn, IconSize(IconNext), "Next")),
 		)
 	}
 
@@ -129,7 +129,7 @@ func (t *Toolbar) Layout(d *Debugger) W {
 	}
 	if showStep {
 		btns = append(btns,
-			Rigid(ToolbarButton(&t.StepBtn, IconStep, "Step")),
+			Rigid(ToolbarButton(&t.StepBtn, IconSize(IconStep), "Step")),
 		)
 	}
 

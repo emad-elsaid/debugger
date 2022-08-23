@@ -35,6 +35,8 @@ func (o *OpenScreen) Browser(c C) D {
 		o.OpenPath()
 	}
 
+	checkboxFont := FontEnlarge(2)
+
 	children := []FlexChild{
 		Flexed(2, o.DirectoryBrowser.Layout(&o.Path)),
 		RowSpacer3,
@@ -61,7 +63,7 @@ func (o *OpenScreen) Browser(c C) D {
 						FormRow(
 							Flexed(1, Label("Debug Tests")),
 							ColSpacer1,
-							Flexed(5, CheckboxBool("debug-tests", &o.Test)),
+							Flexed(5, checkboxFont(CheckboxBool("debug-tests", &o.Test))),
 						),
 					),
 					RowSpacer1,
@@ -69,7 +71,7 @@ func (o *OpenScreen) Browser(c C) D {
 						FormRow(
 							Flexed(1, Label("Run immediately")),
 							ColSpacer1,
-							Flexed(5, CheckboxBool("run-immediatly", &o.RunImmediately)),
+							Flexed(5, checkboxFont(CheckboxBool("run-immediatly", &o.RunImmediately))),
 						),
 					),
 					RowSpacer3,
