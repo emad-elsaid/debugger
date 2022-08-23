@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"gioui.org/widget"
 	. "github.com/emad-elsaid/debugger/ui"
@@ -164,6 +165,13 @@ func (sp *StackPanel) SetVariables(d *Debugger) {
 		return
 	}
 	sp.varsToVarWidget("Local Variables", vars)
+
+	g, err := d.SelectedGoRoutine()
+	if err != nil {
+		return
+	}
+	sp.GoRoutineToWidgets(g)
+
 }
 
 func (sp *StackPanel) SetGoRoutines(d *Debugger) {
@@ -179,6 +187,17 @@ func (sp *StackPanel) varsToVarWidget(title string, args []*proc.Variable) {
 		w := NewVarWidget(v)
 		sp.Vars = append(sp.Vars, w.Layout)
 	}
+}
+
+func (sp *StackPanel) GoRoutineToWidgets(g *proc.G) {
+	sp.Vars = append(sp.Vars,
+		Bold(Text("Go Routine properties")),
+		Text(fmt.Sprintf("Status: %s", GoRoutineStatus(g.Status))),
+		Text(fmt.Sprintf("SystemStack: %v", g.SystemStack)),
+		Text(fmt.Sprintf("Wait Since: %s", time.Duration(g.WaitSince))),
+		Text(fmt.Sprintf("Wait Reason: %s", waitReason(g.WaitReason))),
+		Text(fmt.Sprintf("Go statement: %s:%d", g.Go().File, g.Go().Line)),
+	)
 }
 
 func (sp *StackPanel) VariablesPanel(c C) D {
