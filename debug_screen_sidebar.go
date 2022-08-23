@@ -11,7 +11,6 @@ var lfmt = message.NewPrinter(language.English)
 
 type SideBar struct {
 	watches           []VarWidget
-	watchesExpr       []string
 	watchesList       List
 	watchEditor       widget.Editor
 	debuggerLastState DebuggerState
@@ -41,7 +40,7 @@ func (s *SideBar) Watches(d *Debugger) W {
 				continue
 			}
 
-			s.watchesExpr = append(s.watchesExpr, text)
+			d.CreateWatch(text)
 			s.watchEditor.SetText("")
 		}
 	}
@@ -52,7 +51,7 @@ func (s *SideBar) Watches(d *Debugger) W {
 		if i >= len(s.watches) {
 			return D{}
 		}
-		expr := s.watchesExpr[i]
+		expr := d.WatchesExpr[i]
 		varW := s.watches[i]
 		var w W
 		if varW == nil {
@@ -61,7 +60,7 @@ func (s *SideBar) Watches(d *Debugger) W {
 			w = varW.Layout
 		}
 
-		del := func() { s.DeleteWatch(expr) }
+		del := func() { d.DeleteWatch(expr) }
 
 		return Inset05(
 			Columns(
@@ -73,21 +72,21 @@ func (s *SideBar) Watches(d *Debugger) W {
 
 	return Panel("Watches",
 		Rows(
-			Rigid(ZebraList(&s.watchesList, len(s.watchesExpr), ele)),
+			Rigid(ZebraList(&s.watchesList, len(d.WatchesExpr), ele)),
 			Rigid(TextInput(&s.watchEditor, "New watch expression...")),
 		),
 	)
 }
 
 func (s *SideBar) ExecuteWatches(d *Debugger) {
-	if d.State == s.debuggerLastState && len(s.watches) == len(s.watchesExpr) {
+	if d.State == s.debuggerLastState && len(s.watches) == len(d.WatchesExpr) {
 		return
 	}
 
 	s.debuggerLastState = d.State
 
 	results := []VarWidget{}
-	for _, expr := range s.watchesExpr {
+	for _, expr := range d.WatchesExpr {
 		val, err := d.ExecuteExpr(expr)
 		if err != nil {
 			results = append(results, nil)
@@ -97,14 +96,4 @@ func (s *SideBar) ExecuteWatches(d *Debugger) {
 	}
 
 	s.watches = results
-}
-
-func (s *SideBar) DeleteWatch(expr string) {
-	nWatches := []string{}
-	for _, v := range s.watchesExpr {
-		if v != expr {
-			nWatches = append(nWatches, v)
-		}
-	}
-	s.watchesExpr = nWatches
 }

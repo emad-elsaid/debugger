@@ -39,6 +39,9 @@ type Debugger struct {
 
 	// Cached items
 	breakpoints []*api.Breakpoint
+
+	// Watches
+	WatchesExpr []string
 }
 
 func NewDebugger(p string, bin string, args string, runImmediately bool, test bool) (*Debugger, error) {
@@ -496,4 +499,19 @@ func (d *Debugger) RunningLines() []int {
 	}
 
 	return lines
+}
+
+func (d *Debugger) CreateWatch(expr string) {
+	d.WatchesExpr = append(d.WatchesExpr, expr)
+	SaveSession(ToSession(d))
+}
+
+func (d *Debugger) DeleteWatch(expr string) {
+	nWatches := []string{}
+	for _, v := range d.WatchesExpr {
+		if v != expr {
+			nWatches = append(nWatches, v)
+		}
+	}
+	d.WatchesExpr = nWatches
 }

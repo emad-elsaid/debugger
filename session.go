@@ -46,6 +46,7 @@ type Session struct {
 	RunImmediately bool
 	Test           bool
 	Breakpoints    []SessionBreakpoint
+	Watches        []string
 }
 
 type SessionBreakpoint struct {
@@ -136,6 +137,7 @@ func ToSession(d *Debugger) Session {
 		RunImmediately: d.RunImmediately,
 		Test:           d.Test,
 		Breakpoints:    bps,
+		Watches:        d.WatchesExpr,
 	}
 }
 
@@ -154,6 +156,8 @@ func FromSession(s Session) (*Debugger, error) {
 			Disabled: !bp.Enabled,
 		})
 	}
+
+	d.WatchesExpr = s.Watches
 
 	if s.RunImmediately {
 		d.Continue()
