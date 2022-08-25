@@ -3,6 +3,8 @@ DEBUGGER
 
 Golang debugger graphical user interface. Built on Delve debugger. It aims to provide a similar user experience to Chrome developer tools.
 
+![](screenshots/main.png)
+
 # Features
 
 - Source code view
