@@ -13,6 +13,7 @@ type SideBar struct {
 	watches           []VarWidget
 	watchesList       List
 	watchEditor       widget.Editor
+	clickables        Clickables
 	debuggerLastState DebuggerState
 }
 
@@ -21,6 +22,7 @@ func NewSideBar() SideBar {
 		watches:     []VarWidget{},
 		watchesList: NewVerticalList(),
 		watchEditor: LineEditor(),
+		clickables:  NewClickables(),
 	}
 }
 
@@ -65,7 +67,7 @@ func (s *SideBar) Watches(d *Debugger) W {
 		return Inset05(
 			Columns(
 				Flexed(1, w),
-				Rigid(OnClick(expr, IconDelete, del)),
+				Rigid(OnClick(s.clickables.Get(expr), IconDelete, del)),
 			),
 		)(c)
 	}

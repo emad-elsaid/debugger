@@ -22,11 +22,13 @@ type BreakpointsPanel struct {
 	EnableAll       Clickable
 	DisableAll      Clickable
 	ClearAll        Clickable
+	Clickables      Clickables
 }
 
 func NewBreakpointsPanel() BreakpointsPanel {
 	return BreakpointsPanel{
 		BreakpointsList: NewClickableList(),
+		Clickables:      NewClickables(),
 	}
 }
 
@@ -62,7 +64,7 @@ func (b *BreakpointsPanel) BreakpointsPanel(d *Debugger) W {
 					Rigid(Wrap(Text(fmt.Sprintf("%s:%d", r.File, r.Line)), TextColor(SecondaryTextColor), MaxLines(3))),
 				),
 			),
-			Rigid(OnClick(delId, IconFont(IconDelete), delClick)),
+			Rigid(OnClick(b.Clickables.Get(delId), IconFont(IconDelete), delClick)),
 		)(c)
 	}
 

@@ -85,16 +85,7 @@ func CheckboxBool(id string, value *bool) W {
 	return Checkbox(id, *value, func() { *value = !*value })
 }
 
-var onClickBtns = map[string]*Clickable{}
-
-func OnClick(id string, w W, onclick func()) W {
-	var btn *Clickable
-	var ok bool
-	if btn, ok = onClickBtns[id]; !ok {
-		btn = new(Clickable)
-		onClickBtns[id] = btn
-	}
-
+func OnClick(btn *Clickable, w W, onclick func()) W {
 	if btn.Clicked() {
 		onclick()
 	}

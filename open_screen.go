@@ -15,7 +15,7 @@ type OpenScreen struct {
 	Arguments        widget.Editor
 	Test             bool
 	RunImmediately   bool
-	Button           Clickable
+	Clickables       Clickables
 	Error            error
 	DirectoryBrowser DirectoryBrowser
 	Sessions         []Session
@@ -31,7 +31,7 @@ func (o *OpenScreen) Layout(c C) D {
 }
 
 func (o *OpenScreen) Browser(c C) D {
-	if o.Button.Clicked() {
+	if o.Clickables.Get("debug").Clicked() {
 		o.OpenPath()
 	}
 
@@ -75,7 +75,7 @@ func (o *OpenScreen) Browser(c C) D {
 						),
 					),
 					RowSpacer3,
-					Rigid(Button(&o.Button, "Debug")),
+					Rigid(Button(o.Clickables.Get("debug"), "Debug")),
 				),
 			),
 		),
@@ -138,11 +138,11 @@ func (o *OpenScreen) SessionsListWidget(c C) D {
 			),
 		)
 
-		delItem := OnClick(s.ID+"-del", FontEnlarge(2.5)(IconDelete), del)
+		delItem := OnClick(o.Clickables.Get(s.ID+"-del"), FontEnlarge(2.5)(IconDelete), del)
 
 		return Inset1(
 			Columns(
-				Flexed(1, OnClick(s.ID, sessionItem, click)),
+				Flexed(1, OnClick(o.Clickables.Get(s.ID), sessionItem, click)),
 				Rigid(delItem),
 			),
 		)(c)
@@ -186,6 +186,7 @@ func NewOpenScreen() (o *OpenScreen) {
 		DirectoryBrowser: NewDirectoryBrowser(),
 		Sessions:         ListSessions(),
 		SessionsList:     NewVerticalList(),
+		Clickables:       NewClickables(),
 		BinaryEditor:     LineEditor(),
 		Arguments:        LineEditor(),
 	}

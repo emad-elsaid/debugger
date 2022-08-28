@@ -8,20 +8,18 @@ import (
 	"gioui.org/layout"
 	"gioui.org/text"
 	"gioui.org/unit"
-	"gioui.org/widget"
 	"gioui.org/widget/material"
 )
 
 type (
-	W         = layout.Widget
-	C         = layout.Context
-	D         = layout.Dimensions
-	Clickable = widget.Clickable
-	P         = image.Point
-	DP        = unit.Dp
-	SP        = unit.Sp
-	Wrapper   = func(W) W
-	List      = layout.List
+	W       = layout.Widget
+	C       = layout.Context
+	D       = layout.Dimensions
+	P       = image.Point
+	DP      = unit.Dp
+	SP      = unit.Sp
+	Wrapper = func(W) W
+	List    = layout.List
 )
 
 var (
