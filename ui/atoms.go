@@ -34,34 +34,6 @@ func BorderActive(w W) W {
 	}
 }
 
-func Outline(width int, col color.NRGBA, w W) W {
-	return func(c C) (d D) {
-		wMacro := op.Record(c.Ops)
-		d = w(c)
-		wOp := wMacro.Stop()
-
-		sz := d.Size
-		width := c.Dp(DP(width))
-		sz.X += width
-		sz.Y += width
-		r := image.Rectangle{Max: sz}
-		op.Offset(P{-width / 2, -width / 2}).Add(c.Ops)
-
-		paint.FillShape(c.Ops,
-			col,
-			clip.Stroke{
-				Path:  clip.Rect(r).Path(),
-				Width: float32(width),
-			}.Op(),
-		)
-
-		op.Offset(P{width / 2, width / 2}).Add(c.Ops)
-		wOp.Add(c.Ops)
-
-		return
-	}
-}
-
 func Background(background color.NRGBA, w W) W {
 	return func(c C) D {
 		macro := op.Record(c.Ops)

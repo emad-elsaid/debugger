@@ -98,8 +98,6 @@ func (w *StructVarWidget) Layout(c C) D {
 		w.open = !w.open
 	}
 
-	onClick := LayoutToWidget(w.clickable.Layout)
-
 	if w.open {
 		if w.children == nil {
 			w.children = make([]VarWidget, 0, len(w.Children))
@@ -110,7 +108,12 @@ func (w *StructVarWidget) Layout(c C) D {
 		}
 
 		fields := []FlexChild{
-			Rigid(onClick(Label(fmt.Sprintf("%s %s = {", w.Name, w.TypeString())))),
+			Rigid(
+				LayoutToWidget(
+					w.clickable.Layout,
+					Label(fmt.Sprintf("%s %s = {", w.Name, w.TypeString())),
+				),
+			),
 		}
 
 		padding := Margin(0, 0, 0, SpaceUnit*3)
@@ -122,7 +125,10 @@ func (w *StructVarWidget) Layout(c C) D {
 
 		return Rows(fields...)(c)
 	} else {
-		return onClick(Label(fmt.Sprintf("%s %s = {...}", w.Name, w.TypeString())))(c)
+		return LayoutToWidget(
+			w.clickable.Layout,
+			Label(fmt.Sprintf("%s %s = {...}", w.Name, w.TypeString())),
+		)(c)
 	}
 }
 
@@ -140,8 +146,6 @@ func (w *MapVarWidget) Layout(c C) D {
 		w.open = !w.open
 	}
 
-	onClick := LayoutToWidget(w.clickable.Layout)
-
 	if w.open {
 		if w.keys == nil || w.values == nil {
 			w.keys = make([]VarWidget, 0, len(w.Children)/2)
@@ -157,7 +161,11 @@ func (w *MapVarWidget) Layout(c C) D {
 		}
 
 		fields := []FlexChild{
-			Rigid(onClick(Label(fmt.Sprintf("%s %s = {", w.Name, w.TypeString())))),
+			Rigid(
+				LayoutToWidget(
+					w.clickable.Layout, Label(fmt.Sprintf("%s %s = {", w.Name, w.TypeString())),
+				),
+			),
 		}
 
 		for k := range w.keys {
@@ -177,7 +185,10 @@ func (w *MapVarWidget) Layout(c C) D {
 
 		return Rows(fields...)(c)
 	} else {
-		return onClick(Label(fmt.Sprintf("%s %s = {...(%d)...}", w.Name, w.TypeString(), w.Len/2)))(c)
+		return LayoutToWidget(
+			w.clickable.Layout,
+			Label(fmt.Sprintf("%s %s = {...(%d)...}", w.Name, w.TypeString(), w.Len/2)),
+		)(c)
 	}
 }
 
@@ -210,8 +221,6 @@ func (w *SliceVarWidget) Layout(c C) D {
 		w.open = !w.open
 	}
 
-	onClick := LayoutToWidget(w.clickable.Layout)
-
 	if w.open {
 		if w.children == nil {
 			w.children = make([]VarWidget, 0, len(w.Children))
@@ -222,7 +231,7 @@ func (w *SliceVarWidget) Layout(c C) D {
 		}
 
 		fields := []FlexChild{
-			Rigid(onClick(Label(fmt.Sprintf("%s %s = {", w.Name, w.TypeString())))),
+			Rigid(LayoutToWidget(w.clickable.Layout, Label(fmt.Sprintf("%s %s = {", w.Name, w.TypeString())))),
 		}
 
 		padding := Margin(0, 0, 0, SpaceUnit*3)
@@ -234,7 +243,7 @@ func (w *SliceVarWidget) Layout(c C) D {
 
 		return Rows(fields...)(c)
 	} else {
-		return onClick(Label(fmt.Sprintf("%s %s = {...(%d)...}", w.Name, w.TypeString(), w.Len)))(c)
+		return LayoutToWidget(w.clickable.Layout, Label(fmt.Sprintf("%s %s = {...(%d)...}", w.Name, w.TypeString(), w.Len)))(c)
 	}
 }
 

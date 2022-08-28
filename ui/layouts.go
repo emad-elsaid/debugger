@@ -15,7 +15,13 @@ var (
 	Rigid  = layout.Rigid
 )
 
-func LayoutToWidget(r func(C, W) D) func(w W) W {
+func LayoutToWidget(r func(C, W) D, w W) W {
+	return func(c C) D {
+		return r(c, w)
+	}
+}
+
+func LayoutToWrapper(r func(C, W) D) func(w W) W {
 	return func(w W) W {
 		return func(c C) D {
 			return r(c, w)

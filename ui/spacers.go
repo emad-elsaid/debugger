@@ -7,13 +7,13 @@ import (
 
 // Insets
 var (
-	Inset05 = LayoutToWidget(layout.UniformInset(SpaceUnit * 0.5).Layout)
-	Inset1  = LayoutToWidget(layout.UniformInset(SpaceUnit).Layout)
-	Inset2  = LayoutToWidget(layout.UniformInset(SpaceUnit * 2).Layout)
-	Inset3  = LayoutToWidget(layout.UniformInset(SpaceUnit * 3).Layout)
-	Inset4  = LayoutToWidget(layout.UniformInset(SpaceUnit * 4).Layout)
-	Inset5  = LayoutToWidget(layout.UniformInset(SpaceUnit * 5).Layout)
-	Inset6  = LayoutToWidget(layout.UniformInset(SpaceUnit * 6).Layout)
+	Inset05 = LayoutToWrapper(layout.UniformInset(SpaceUnit * 0.5).Layout)
+	Inset1  = LayoutToWrapper(layout.UniformInset(SpaceUnit).Layout)
+	Inset2  = LayoutToWrapper(layout.UniformInset(SpaceUnit * 2).Layout)
+	Inset3  = LayoutToWrapper(layout.UniformInset(SpaceUnit * 3).Layout)
+	Inset4  = LayoutToWrapper(layout.UniformInset(SpaceUnit * 4).Layout)
+	Inset5  = LayoutToWrapper(layout.UniformInset(SpaceUnit * 5).Layout)
+	Inset6  = LayoutToWrapper(layout.UniformInset(SpaceUnit * 6).Layout)
 )
 
 // Spaces
@@ -36,5 +36,5 @@ var (
 )
 
 func Margin(t, r, b, l unit.Dp) Wrapper {
-	return LayoutToWidget(layout.Inset{Top: t, Right: r, Bottom: b, Left: l}.Layout)
+	return LayoutToWrapper(layout.Inset{Top: t, Right: r, Bottom: b, Left: l}.Layout)
 }

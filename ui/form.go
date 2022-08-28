@@ -34,7 +34,8 @@ func Button(clickable *Clickable, label string) W {
 		col = ACCENT_COLOR_500
 	}
 
-	return LayoutToWidget(clickable.Layout)(
+	return LayoutToWidget(
+		clickable.Layout,
 		RoundedCorners(
 			Background(col, Wrap(Label(label), Inset1, AlignMiddle, TextColor(WHITE))),
 		),
@@ -55,7 +56,7 @@ func CheckboxBtn(value bool, btn *Clickable) W {
 		icon = IconCheckbox
 	}
 
-	return LayoutToWidget(btn.Layout)(icon)
+	return LayoutToWidget(btn.Layout, icon)
 }
 
 func Checkbox(id string, value bool, onclick func()) W {
@@ -77,7 +78,7 @@ func Checkbox(id string, value bool, onclick func()) W {
 		icon = IconCheckbox
 	}
 
-	return LayoutToWidget(btn.Layout)(icon)
+	return LayoutToWidget(btn.Layout, icon)
 }
 
 func CheckboxBool(id string, value *bool) W {

@@ -181,7 +181,7 @@ func (src *SourcePanel) LayoutLines(d *Debugger, running []int, bps map[int]bool
 		}
 		bp = RoundedCorners(bp)
 
-		bpWithButton := LayoutToWidget(btn.Layout)(bp)
+		bpWithButton := LayoutToWidget(btn.Layout, bp)
 
 		lineBtn := src.LineBtn(i)
 		if lineBtn.Clicked() {
