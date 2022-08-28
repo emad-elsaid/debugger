@@ -63,7 +63,12 @@ func (o *OpenScreen) Browser(c C) D {
 						FormRow(
 							Flexed(1, Label("Debug Tests")),
 							ColSpacer1,
-							Flexed(5, checkboxFont(CheckboxBool("debug-tests", &o.Test))),
+							Flexed(5,
+								checkboxFont(
+									CheckboxBool(
+										o.Clickables.Get("debug-tests"), &o.Test),
+								),
+							),
 						),
 					),
 					RowSpacer1,
@@ -71,7 +76,12 @@ func (o *OpenScreen) Browser(c C) D {
 						FormRow(
 							Flexed(1, Label("Run immediately")),
 							ColSpacer1,
-							Flexed(5, checkboxFont(CheckboxBool("run-immediatly", &o.RunImmediately))),
+							Flexed(5,
+								checkboxFont(
+									CheckboxBool(
+										o.Clickables.Get("run-immediatly"), &o.RunImmediately),
+								),
+							),
 						),
 					),
 					RowSpacer3,

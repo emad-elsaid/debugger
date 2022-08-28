@@ -45,7 +45,6 @@ func Button(clickable *Clickable, label string) W {
 var (
 	IconCheckbox       = Inset05(Icon(icons.ToggleCheckBoxOutlineBlank, CheckboxColor))
 	IconCheckboxActive = Inset05(Icon(icons.ToggleCheckBox, CheckboxColor))
-	checkboxBtns       = map[string]*Clickable{}
 )
 
 func CheckboxBtn(value bool, btn *Clickable) W {
@@ -59,14 +58,7 @@ func CheckboxBtn(value bool, btn *Clickable) W {
 	return LayoutToWidget(btn.Layout, icon)
 }
 
-func Checkbox(id string, value bool, onclick func()) W {
-	var btn *Clickable
-	var ok bool
-	if btn, ok = checkboxBtns[id]; !ok {
-		btn = new(Clickable)
-		checkboxBtns[id] = btn
-	}
-
+func Checkbox(btn *Clickable, value bool, onclick func()) W {
 	if btn.Clicked() {
 		onclick()
 	}
@@ -81,8 +73,8 @@ func Checkbox(id string, value bool, onclick func()) W {
 	return LayoutToWidget(btn.Layout, icon)
 }
 
-func CheckboxBool(id string, value *bool) W {
-	return Checkbox(id, *value, func() { *value = !*value })
+func CheckboxBool(btn *Clickable, value *bool) W {
+	return Checkbox(btn, *value, func() { *value = !*value })
 }
 
 func OnClick(btn *Clickable, w W, onclick func()) W {

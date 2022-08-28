@@ -57,7 +57,7 @@ func (b *BreakpointsPanel) BreakpointsPanel(d *Debugger) W {
 		delClick := func() { d.ClearBreakpoint(r) }
 
 		return Columns(
-			Rigid(IconFont(Checkbox(id, !r.Disabled, click))),
+			Rigid(IconFont(Checkbox(b.Clickables.Get(id), !r.Disabled, click))),
 			Flexed(1,
 				Rows(
 					Rigid(Label(r.Name)),
