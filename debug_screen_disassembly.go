@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	. "github.com/emad-elsaid/debugger/ui"
-	"github.com/go-delve/delve/pkg/proc"
+	"github.com/emad-elsaid/delve/pkg/proc"
 )
 
 type DisassemblyPanel struct {

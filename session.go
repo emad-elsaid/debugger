@@ -7,7 +7,7 @@ import (
 	"path"
 
 	"gioui.org/app"
-	"github.com/go-delve/delve/service/api"
+	"github.com/emad-elsaid/delve/service/api"
 	"github.com/google/uuid"
 )
 

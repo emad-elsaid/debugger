@@ -9,10 +9,10 @@ import (
 
 	"gioui.org/io/system"
 	. "github.com/emad-elsaid/types"
-	"github.com/go-delve/delve/pkg/gobuild"
-	"github.com/go-delve/delve/pkg/proc"
-	"github.com/go-delve/delve/service/api"
-	"github.com/go-delve/delve/service/debugger"
+	"github.com/emad-elsaid/delve/pkg/gobuild"
+	"github.com/emad-elsaid/delve/pkg/proc"
+	"github.com/emad-elsaid/delve/service/api"
+	"github.com/emad-elsaid/delve/service/debugger"
 )
 
 type DebuggerState uint64

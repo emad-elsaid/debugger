@@ -10,7 +10,7 @@ import (
 	"gioui.org/layout"
 	. "github.com/emad-elsaid/debugger/ui"
 	. "github.com/emad-elsaid/types"
-	"github.com/go-delve/delve/service/api"
+	"github.com/emad-elsaid/delve/service/api"
 )
 
 var (

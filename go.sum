@@ -59,8 +59,8 @@ github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSs
 github.com/derekparker/trie v0.0.0-20200317170641-1fdf38b7b0e9/go.mod h1:D6ICZm05D9VN1n/8iOtBxLpXtoGp6HDFUJ1RNVieOSE=
 github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/dgryski/go-sip13 v0.0.0-20181026042036-e10d5fee7954/go.mod h1:vAd38F8PWV+bWy6jNmig1y/TA+kYO4g3RSRF0IAv0no=
-github.com/emad-elsaid/delve v0.0.0-20220806175246-338442f55207 h1:kSifHxt5rjIDEv+UzsstVoVlh5wR2s0NJAM0cnKdPNw=
-github.com/emad-elsaid/delve v0.0.0-20220806175246-338442f55207/go.mod h1:CMUUF5L5qeBI3DXz9K/vXOt+h+TycVegYuzq8vv2cOk=
+github.com/emad-elsaid/delve v0.0.0-20220828190829-96212cb354b1 h1:ARylf55Qg5QYx2E5lUPOoQZOcXxCXRRmTjOq9m8KBS8=
+github.com/emad-elsaid/delve v0.0.0-20220828190829-96212cb354b1/go.mod h1:Jm3WPzCK3xNfvr1tmn0a9ftv/X+y5GKF7N9wWJPwq7A=
 github.com/emad-elsaid/types v0.0.1 h1:7/IUZOQVNcVFkcXCrkCx5hcP2fJ/2PCHYjsRwwfWLBU=
 github.com/emad-elsaid/types v0.0.1/go.mod h1:V+Kq+VclMzClQ2y2k+I74gkBl1aFgLRNyyRYID/GVKw=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
@@ -72,8 +72,6 @@ github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/gioui/uax v0.2.1-0.20220325163150-e3d987515a12 h1:1bjaB/5IIicfKpP4k0s30T2WEw//Kh00zULa8DQ0cxA=
 github.com/gioui/uax v0.2.1-0.20220325163150-e3d987515a12/go.mod h1:kDhBRTA/i3H46PVdhqcw26TdGSIj42TOKNWKY+Kipnw=
-github.com/go-delve/delve v1.9.0 h1:+vW0r1vuwk5Fqv+89ZvLTUfx55PvlENvfW4DH3v+x48=
-github.com/go-delve/delve v1.9.0/go.mod h1:CMUUF5L5qeBI3DXz9K/vXOt+h+TycVegYuzq8vv2cOk=
 github.com/go-delve/liner v1.2.3-0.20220127212407-d32d89dd2a5d/go.mod h1:biJCRbqp51wS+I92HMqn5H8/A0PAhxn2vyOT+JqhiGI=
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/go-kit/kit v0.8.0/go.mod h1:xBxKIO96dXMWWy0MnWVtmwkA9/13aqxPnvrjFYMA2as=
@@ -346,8 +344,9 @@ golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20210906170528-6f6e22806c34/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20211019181941-9d821ace8654/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
-golang.org/x/sys v0.0.0-20211117180635-dee7805ff2e1 h1:kwrAHlwJ0DUBZwQ238v+Uod/3eZ8B2K5rYsUHBQvzmI=
 golang.org/x/sys v0.0.0-20211117180635-dee7805ff2e1/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab h1:2QkjZIsXupsJbJIdSjjUOgWK3aEtzyuh2mPt3l/CkeU=
+golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/text v0.3.1-0.20180807135948-17ff2d5776d2/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=

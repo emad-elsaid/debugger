@@ -4,16 +4,14 @@ go 1.19
 
 require (
 	gioui.org v0.0.0-20220710125950-53da73de35db
+	github.com/emad-elsaid/delve v0.0.0-20220828190829-96212cb354b1
 	github.com/emad-elsaid/types v0.0.1
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/go-delve/delve v1.9.0
 	github.com/google/uuid v1.3.0
 	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e
 	golang.org/x/exp/shiny v0.0.0-20220722155223-a9213eeb770e
 	golang.org/x/text v0.3.7
 )
-
-replace github.com/go-delve/delve v1.9.0 => github.com/emad-elsaid/delve v0.0.0-20220806175246-338442f55207
 
 require (
 	gioui.org/cpu v0.0.0-20210817075930-8d6a761490d2 // indirect
@@ -28,7 +26,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	golang.org/x/arch v0.0.0-20190927153633-4e8777c89be4 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
-	golang.org/x/sys v0.0.0-20211117180635-dee7805ff2e1 // indirect
+	golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
