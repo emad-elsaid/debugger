@@ -1,6 +1,6 @@
 package main
 
-import "github.com/emad-elsaid/delve/pkg/proc"
+import "github.com/go-delve/delve/pkg/proc"
 
 // copied from: https://go.dev/src/runtime/runtime2.go
 

@@ -5,7 +5,7 @@ import (
 	"os"
 
 	. "github.com/emad-elsaid/debugger/ui"
-	"github.com/emad-elsaid/delve/pkg/proc"
+	"github.com/go-delve/delve/pkg/proc"
 	"golang.org/x/exp/shiny/materialdesign/icons"
 )
 

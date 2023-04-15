@@ -4,9 +4,9 @@ go 1.19
 
 require (
 	gioui.org v0.0.0-20220710125950-53da73de35db
-	github.com/emad-elsaid/delve v0.0.0-20220828190829-96212cb354b1
 	github.com/emad-elsaid/types v0.0.1
 	github.com/fsnotify/fsnotify v1.4.9
+	github.com/go-delve/delve v1.20.2
 	github.com/google/uuid v1.3.0
 	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e
 	golang.org/x/exp/shiny v0.0.0-20220722155223-a9213eeb770e
@@ -26,7 +26,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	golang.org/x/arch v0.0.0-20190927153633-4e8777c89be4 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
-	golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab // indirect
+	golang.org/x/sys v0.0.0-20220908164124-27713097b956 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )

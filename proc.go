@@ -5,7 +5,7 @@ import (
 	"reflect"
 
 	. "github.com/emad-elsaid/debugger/ui"
-	"github.com/emad-elsaid/delve/pkg/proc"
+	"github.com/go-delve/delve/pkg/proc"
 )
 
 const MaxVarUINest = 4

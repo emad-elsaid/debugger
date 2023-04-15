@@ -5,14 +5,17 @@ import (
 	"log"
 	"os"
 	"path"
+	"reflect"
 	"strings"
+	"sync"
+	"unsafe"
 
 	"gioui.org/io/system"
 	. "github.com/emad-elsaid/types"
-	"github.com/emad-elsaid/delve/pkg/gobuild"
-	"github.com/emad-elsaid/delve/pkg/proc"
-	"github.com/emad-elsaid/delve/service/api"
-	"github.com/emad-elsaid/delve/service/debugger"
+	"github.com/go-delve/delve/pkg/gobuild"
+	"github.com/go-delve/delve/pkg/proc"
+	"github.com/go-delve/delve/service/api"
+	"github.com/go-delve/delve/service/debugger"
 )
 
 type DebuggerState uint64
@@ -75,6 +78,12 @@ func NewDebugger(p string, bin string, args string, runImmediately bool, test bo
 	return &d, nil
 }
 
+func (d *Debugger) TryLockTarget() bool {
+	field := reflect.ValueOf(d.Debugger).Elem().FieldByName("targetMutex")
+	mtx := reflect.NewAt(field.Type(), unsafe.Pointer(field.UnsafeAddr())).Interface()
+	return mtx.(*sync.Mutex).TryLock()
+}
+
 func (d *Debugger) InitDebugger() error {
 	config := d.DebugConfig()
 	argsArr := append([]string{path.Join(d.Path, d.BinName)}, strings.Split(d.Args, " ")...)
@@ -133,7 +142,7 @@ func (d *Debugger) CreateBreakpoint(bp *api.Breakpoint) (*api.Breakpoint, error)
 		defer d.Continue()
 	}
 
-	b, err := d.Debugger.CreateBreakpoint(bp)
+	b, err := d.Debugger.CreateBreakpoint(bp, "", nil, false)
 	SaveSession(ToSession(d))
 	return b, err
 }
@@ -434,7 +443,8 @@ func (d *Debugger) Breakpoints() []*api.Breakpoint {
 	abps := []*api.Breakpoint{}
 	for _, lbp := range d.Target().Breakpoints().Logical {
 		abp := api.ConvertLogicalBreakpoint(lbp)
-		api.ConvertPhysicalBreakpoints(abp, d.findBreakpoint(lbp.LogicalID))
+		pids, bp := d.findBreakpoint(lbp.LogicalID)
+		api.ConvertPhysicalBreakpoints(abp, pids, bp)
 		abps = append(abps, abp)
 	}
 
@@ -443,14 +453,16 @@ func (d *Debugger) Breakpoints() []*api.Breakpoint {
 	return d.breakpoints
 }
 
-func (d *Debugger) findBreakpoint(id int) []*proc.Breakpoint {
+func (d *Debugger) findBreakpoint(id int) ([]int, []*proc.Breakpoint) {
 	var bps []*proc.Breakpoint
+	var pids []int
 	for _, bp := range d.Target().Breakpoints().M {
 		if bp.LogicalID() == id {
+			pids = append(pids, bp.LogicalID())
 			bps = append(bps, bp)
 		}
 	}
-	return bps
+	return pids, bps
 }
 
 func (d *Debugger) FunctionArguments() ([]*proc.Variable, error) {
