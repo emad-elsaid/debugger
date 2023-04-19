@@ -20,7 +20,30 @@ var (
 
 func main() {
 	win.Option(app.Title("Go Debugger"))
-	tree = NewOpenScreen().Layout
+
+	cmdAndArgs := os.Args[1:]
+	if len(cmdAndArgs) == 0 {
+		log.Fatalln("debugger needs a command: `run` or `test`")
+	}
+
+	cmd := cmdAndArgs[0]
+
+	args := []string{"."}
+	if len(cmd) > 1 {
+		args = cmdAndArgs[1:]
+	}
+
+	debugger, err := NewDebugger("debug", args, true, cmd == "test")
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	screen, err := NewDebugScreen(debugger)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+
+	tree = screen.Layout
 
 	go RunWindowAndExit()
 	go Refresher()

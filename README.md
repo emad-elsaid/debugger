@@ -18,7 +18,6 @@ Golang debugger graphical user interface. Built on Delve debugger. It aims to pr
 - Shows Process current working directory
 - Compiles go module executable or tests
 - Recompile and restart the process when changes are detected
-- Saves sessions for current project, with latest breakpoints
 - Stack trace panel, listing all go routines
 - List of packages, and links to package documentation
 - List of source files
@@ -40,24 +39,41 @@ go install github.com/emad-elsaid/debugger@latest
 
 # Getting Started
 
-- Run `debugger`
-- Choose a directory of Go code where your main package exists
-- Press continue button to start your program
-- You can add Breakpoints at any time. it'll pause the program for a moment to set the breakpoint
-- You can jump to any function from the functions panel or any file from source panel
+## Debug binary
 
+```shell
+debugger run <package-path> <compile-arguments> -- <runtime-argument>
+```
+
+* arguments before `--` is passed to `go build` command.
+* arguments after `--` is passed to your program.
+
+Examples:
+
+Compile and debug the package in current directory
+```shell
+debugger run .
+```
+Compile and debug package in `cmd/cli/` directory
+```shell
+debugger run ./cmd/cli/
+```
+Compile and debug current package and pass `--secure=false` to the program
+```shell
+debugger run . -- --secure=false
+```
+
+## Test binary
+
+```shell
+debugger test <package-path> <compile-arguments> -- <runtime-argument>
+```
 
 # Dependencies
 
 - fsnotify
 - Delve
 - Gioui
-
-# Sessions
-
-Sessions are saved all the time when a relevant change happens in the UI. sessions are saves in user config directory
-
-On linux sessions are saved in `~/.config/debugger/sessions.json` clearing the session can be done by deleting this file.
 
 # Contributing
 

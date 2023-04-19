@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"path"
 	"time"
 
 	. "github.com/emad-elsaid/debugger/ui"
@@ -110,7 +109,6 @@ func (d *DebugScreen) StopWatch() {
 
 func (d *DebugScreen) StartWatch() {
 	debugger := d.Debugger
-	binpath := path.Join(d.Debugger.Path, d.Debugger.BinName)
 
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -136,7 +134,7 @@ func (d *DebugScreen) StartWatch() {
 
 				supportedOp := isWrite || isRename || isRemove
 
-				if supportedOp && event.Name != binpath {
+				if supportedOp && event.Name != d.Debugger.BinName {
 					d.Log(LogInfo, "%s file: %s", event.Op, event.Name)
 					debugger.Restart()
 				}
@@ -149,8 +147,8 @@ func (d *DebugScreen) StartWatch() {
 		}
 	}()
 
-	if err := WatchAddRecursive(watcher, debugger.ProjectPath); err != nil {
-		d.Log(LogError, "Can't watch: %s Error: %s", debugger.ProjectPath, err)
+	if err := WatchAddRecursive(watcher, debugger.Path); err != nil {
+		d.Log(LogError, "Can't watch: %s Error: %s", debugger.Path, err)
 	}
 
 	<-done

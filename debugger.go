@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
-	"path"
 	"reflect"
 	"strings"
 	"sync"
@@ -25,15 +23,11 @@ type Debugger struct {
 	State     DebuggerState
 	LastState *api.DebuggerState
 
-	SessionID string
-
 	// Project props
-	ProjectPath    string
-	Path           string
-	BinName        string
-	Args           string
-	RunImmediately bool
-	Test           bool
+	Path    string
+	BinName string
+	Args    []string
+	Test    bool
 
 	// Run state
 	StackFrame int
@@ -47,33 +41,22 @@ type Debugger struct {
 	WatchesExpr []string
 }
 
-func NewDebugger(p string, bin string, args string, runImmediately bool, test bool) (*Debugger, error) {
-	s, err := os.Stat(p)
-	if err != nil {
-		return nil, err
-	}
-
-	if !s.IsDir() {
-		return nil, fmt.Errorf("%s is not a directory", p)
-	}
+func NewDebugger(bin string, args []string, runImmediately bool, test bool) (*Debugger, error) {
+	wd, _ := os.Getwd()
 
 	d := Debugger{
-		ProjectPath:    ProjectDir(p),
-		Path:           p,
-		BinName:        bin,
-		Args:           args,
-		RunImmediately: runImmediately,
-		breakpoints:    []*api.Breakpoint{},
-		Test:           test,
+		Path:        wd,
+		BinName:     bin,
+		Args:        args,
+		breakpoints: []*api.Breakpoint{},
+		Test:        test,
 	}
 
 	if err := d.InitDebugger(); err != nil {
 		return nil, err
 	}
 
-	if d.RunImmediately {
-		d.Continue()
-	}
+	d.Continue()
 
 	return &d, nil
 }
@@ -84,15 +67,40 @@ func (d *Debugger) TryLockTarget() bool {
 	return mtx.(*sync.Mutex).TryLock()
 }
 
+func (d *Debugger) compileArgs() []string {
+	var a Slice[string] = d.Args
+	sep := a.Index("--")
+
+	if sep == -1 {
+		return d.Args
+	}
+
+	if sep == 0 {
+		return []string{}
+	}
+
+	return d.Args[:sep]
+}
+
+func (d *Debugger) runArgs() []string {
+	var a Slice[string] = d.Args
+	sep := a.Index("--")
+
+	if sep == -1 {
+		return []string{}
+	}
+
+	return d.Args[sep+1:]
+}
+
 func (d *Debugger) InitDebugger() error {
 	config := d.DebugConfig()
-	argsArr := append([]string{path.Join(d.Path, d.BinName)}, strings.Split(d.Args, " ")...)
 
 	if err := d.Compile(); err != nil {
 		return err
 	}
 
-	deb, err := debugger.New(config, argsArr)
+	deb, err := debugger.New(config, append([]string{d.BinName}, d.runArgs()...))
 	if err != nil {
 		return err
 	}
@@ -114,7 +122,8 @@ func (d *Debugger) DebugConfig() *debugger.Config {
 		Backend:     "default",
 		Foreground:  true,
 		ExecuteKind: executeKind,
-		Packages:    []string{d.Path},
+		Packages:    []string{},
+		BuildFlags:  strings.Join(d.compileArgs(), " "),
 	}
 }
 
@@ -143,7 +152,6 @@ func (d *Debugger) CreateBreakpoint(bp *api.Breakpoint) (*api.Breakpoint, error)
 	}
 
 	b, err := d.Debugger.CreateBreakpoint(bp, "", nil, false)
-	SaveSession(ToSession(d))
 	return b, err
 }
 
@@ -154,7 +162,6 @@ func (d *Debugger) AmendBreakpoint(bp *api.Breakpoint) error {
 	}
 
 	err := d.Debugger.AmendBreakpoint(bp)
-	SaveSession(ToSession(d))
 	return err
 }
 
@@ -165,7 +172,6 @@ func (d *Debugger) ClearBreakpoint(bp *api.Breakpoint) (*api.Breakpoint, error) 
 	}
 
 	b, err := d.Debugger.ClearBreakpoint(bp)
-	SaveSession(ToSession(d))
 	return b, err
 }
 
@@ -181,7 +187,6 @@ func (d *Debugger) ClearAllBreakpoints() error {
 		}
 	}
 
-	SaveSession(ToSession(d))
 	return nil
 }
 
@@ -206,7 +211,6 @@ func (d *Debugger) EnableAllBreakpoints() error {
 		}
 	}
 
-	SaveSession(ToSession(d))
 	return nil
 }
 
@@ -226,7 +230,6 @@ func (d *Debugger) DisableAllBreakpoints() error {
 		}
 	}
 
-	SaveSession(ToSession(d))
 	return nil
 }
 
@@ -410,14 +413,9 @@ func (d *Debugger) JumpToFunction(name string) {
 
 func (d *Debugger) Compile() error {
 	config := d.DebugConfig()
-	binPath := path.Join(d.Path, d.BinName)
 
-	if err := os.Chdir(d.Path); err != nil {
-		return err
-	}
-
-	if _, err := os.Stat(binPath); err == nil {
-		gobuild.Remove(binPath)
+	if _, err := os.Stat(d.BinName); err == nil {
+		gobuild.Remove(d.BinName)
 	}
 
 	var err error
@@ -515,7 +513,6 @@ func (d *Debugger) RunningLines() []int {
 
 func (d *Debugger) CreateWatch(expr string) {
 	d.WatchesExpr = append(d.WatchesExpr, expr)
-	SaveSession(ToSession(d))
 }
 
 func (d *Debugger) DeleteWatch(expr string) {
