@@ -3,13 +3,14 @@ package ui
 import (
 	"image/color"
 
+	"gioui.org/font"
 	"gioui.org/text"
 )
 
 type ThemeStyle struct {
 	FontSize      SP
-	FontFamily    *text.Cache
-	FontWeight    text.Weight
+	FontFamily    *text.Shaper
+	FontWeight    font.Weight
 	TextAlignment text.Alignment
 	TextColor     color.NRGBA
 	MaxLines      int
@@ -18,7 +19,7 @@ type ThemeStyle struct {
 var Theme = ThemeStyle{
 	FontSize:      13,
 	FontFamily:    fontShaper,
-	FontWeight:    text.Normal,
+	FontWeight:    font.Normal,
 	TextAlignment: text.Start,
 	TextColor:     BLACK_500,
 	MaxLines:      0,
@@ -40,7 +41,7 @@ func FontEnlarge(s float32) Wrapper {
 	return FontSize(SP(s) * Theme.FontSize)
 }
 
-func Font(f *text.Cache) Wrapper {
+func Font(f *text.Shaper) Wrapper {
 	return func(w W) W {
 		return func(c C) D {
 			old := Theme.FontFamily
@@ -52,7 +53,7 @@ func Font(f *text.Cache) Wrapper {
 	}
 }
 
-func FontWeight(f text.Weight) Wrapper {
+func FontWeight(f font.Weight) Wrapper {
 	return func(w W) W {
 		return func(c C) D {
 			old := Theme.FontWeight

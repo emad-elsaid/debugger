@@ -28,7 +28,7 @@ var (
 	BorderSize DP = 1
 
 	fonts      = gofont.Collection()
-	fontShaper = text.NewCache(fonts)
+	fontShaper = text.NewShaper(fonts)
 	th         = material.NewTheme(fonts)
 )
 
