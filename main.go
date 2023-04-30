@@ -45,22 +45,23 @@ func main() {
 
 	tree = screen.Layout
 
-	go RunWindowAndExit()
+	go RunWindowAndExit(debugger)
 	go Refresher()
 	app.Main()
 }
 
-func RunWindowAndExit() {
-	if err := EventLoop(); err != nil {
+func RunWindowAndExit(debugger *Debugger) {
+	if err := EventLoop(debugger); err != nil {
 		log.Fatal(err)
 	}
 	os.Exit(0)
 }
 
-func EventLoop() error {
+func EventLoop(debugger *Debugger) error {
 	for e := range win.Events() {
 		switch e := e.(type) {
 		case system.DestroyEvent:
+			debugger.Detach(true)
 			return e.Err
 		case system.FrameEvent:
 			c := layout.NewContext(&ops, e)
