@@ -152,6 +152,7 @@ func (d *Debugger) CreateBreakpoint(bp *api.Breakpoint) (*api.Breakpoint, error)
 	}
 
 	b, err := d.Debugger.CreateBreakpoint(bp, "", nil, false)
+	d.cacheBreakpoints()
 	return b, err
 }
 
@@ -162,6 +163,7 @@ func (d *Debugger) AmendBreakpoint(bp *api.Breakpoint) error {
 	}
 
 	err := d.Debugger.AmendBreakpoint(bp)
+	d.cacheBreakpoints()
 	return err
 }
 
@@ -172,6 +174,7 @@ func (d *Debugger) ClearBreakpoint(bp *api.Breakpoint) (*api.Breakpoint, error) 
 	}
 
 	b, err := d.Debugger.ClearBreakpoint(bp)
+	d.cacheBreakpoints()
 	return b, err
 }
 
@@ -186,6 +189,8 @@ func (d *Debugger) ClearAllBreakpoints() error {
 			return err
 		}
 	}
+
+	d.cacheBreakpoints()
 
 	return nil
 }
@@ -438,6 +443,11 @@ func (d *Debugger) Breakpoints() []*api.Breakpoint {
 	}
 	defer d.UnlockTarget()
 
+	d.cacheBreakpoints()
+	return d.breakpoints
+}
+
+func (d *Debugger) cacheBreakpoints() {
 	abps := []*api.Breakpoint{}
 	for _, lbp := range d.Target().Breakpoints().Logical {
 		abp := api.ConvertLogicalBreakpoint(lbp)
@@ -448,7 +458,6 @@ func (d *Debugger) Breakpoints() []*api.Breakpoint {
 
 	d.breakpoints = abps
 
-	return d.breakpoints
 }
 
 func (d *Debugger) findBreakpoint(id int) ([]int, []*proc.Breakpoint) {
