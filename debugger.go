@@ -24,10 +24,11 @@ type Debugger struct {
 	LastState *api.DebuggerState
 
 	// Project props
-	Path    string
-	BinName string
-	Args    []string
-	Test    bool
+	Path     string
+	BinName  string
+	Args     []string
+	Test     bool
+	PreBuilt bool
 
 	// Run state
 	StackFrame int
@@ -41,7 +42,7 @@ type Debugger struct {
 	WatchesExpr []string
 }
 
-func NewDebugger(bin string, args []string, runImmediately bool, test bool) (*Debugger, error) {
+func NewDebugger(bin string, args []string, runImmediately, test, preBuilt bool) (*Debugger, error) {
 	wd, _ := os.Getwd()
 
 	d := Debugger{
@@ -50,6 +51,7 @@ func NewDebugger(bin string, args []string, runImmediately bool, test bool) (*De
 		Args:        args,
 		breakpoints: []*api.Breakpoint{},
 		Test:        test,
+		PreBuilt:    preBuilt,
 	}
 
 	if err := d.InitDebugger(); err != nil {
@@ -96,8 +98,10 @@ func (d *Debugger) runArgs() []string {
 func (d *Debugger) InitDebugger() error {
 	config := d.DebugConfig()
 
-	if err := d.Compile(); err != nil {
-		return err
+	if !d.PreBuilt {
+		if err := d.Compile(); err != nil {
+			return err
+		}
 	}
 
 	deb, err := debugger.New(config, append([]string{d.BinName}, d.runArgs()...))
@@ -457,7 +461,6 @@ func (d *Debugger) cacheBreakpoints() {
 	}
 
 	d.breakpoints = abps
-
 }
 
 func (d *Debugger) findBreakpoint(id int) ([]int, []*proc.Breakpoint) {
