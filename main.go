@@ -23,7 +23,7 @@ func main() {
 
 	cmdAndArgs := os.Args[1:]
 	if len(cmdAndArgs) == 0 {
-		log.Fatalln("debugger needs a command: `run` or `test`")
+		log.Fatalln("debugger needs a command: `run`, `exec` or `test`")
 	}
 
 	cmd := cmdAndArgs[0]
@@ -33,7 +33,19 @@ func main() {
 		args = cmdAndArgs[1:]
 	}
 
-	debugger, err := NewDebugger("debug", args, true, cmd == "test")
+	bin := "debug"
+
+	switch cmd {
+	case "run":
+	case "test":
+	case "exec":
+		bin = args[0]
+		args = args[1:]
+	default:
+		log.Fatalln("invalid command: ", cmd)
+	}
+
+	debugger, err := NewDebugger(bin, args, true, cmd == "test", cmd == "exec")
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
