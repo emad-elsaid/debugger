@@ -372,7 +372,7 @@ func (d *Debugger) Stop() {
 func (d *Debugger) Restart() {
 	d.Stop()
 
-	_, err := d.Debugger.Restart(false, "", false, []string{}, [3]string{}, true)
+	_, err := d.Debugger.Restart(false, "", false, []string{}, [3]string{}, !d.PreBuilt)
 	if err != nil {
 		log.Printf("Error restarting: %s", err)
 		return
