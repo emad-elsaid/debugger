@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"gioui.org/app"
-	"gioui.org/layout"
 	"gioui.org/op"
 	. "github.com/emad-elsaid/debugger/ui"
 )
