@@ -6,14 +6,13 @@ import (
 	"time"
 
 	"gioui.org/app"
-	"gioui.org/io/system"
 	"gioui.org/layout"
 	"gioui.org/op"
 	. "github.com/emad-elsaid/debugger/ui"
 )
 
 var (
-	win  = app.NewWindow()
+	win  = new(app.Window)
 	ops  op.Ops
 	tree W
 )
@@ -60,11 +59,11 @@ func RunWindowAndExit(debugger *Debugger) {
 func EventLoop(debugger *Debugger) error {
 	for e := range win.Events() {
 		switch e := e.(type) {
-		case system.DestroyEvent:
+		case app.DestroyEvent:
 			debugger.Detach(true)
 			return e.Err
-		case system.FrameEvent:
-			c := layout.NewContext(&ops, e)
+		case app.FrameEvent:
+			c := app.NewContext(&ops, e)
 			tree(c)
 			e.Frame(c.Ops)
 		}

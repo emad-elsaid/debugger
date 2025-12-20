@@ -80,32 +80,35 @@ func NewConsolePanel() ConsolePanel {
 
 func (cp *ConsolePanel) Layout(d *Debugger) W {
 	cp.List.ScrollToEnd = true
-	cp.HandleEvent(d)
 
-	logsPanel := ZebraList(&cp.List, len(cp.Logs), func(c C, i int) D {
-		return Inset05(cp.Logs[i])(c)
-	})
-
-	return Rows(
-		Flexed(1, logsPanel),
-		Rigid(TextInput(&cp.Editor, "Write commands here")),
-	)
-}
-
-func (cp *ConsolePanel) HandleEvent(d *Debugger) {
-	evts := cp.Editor.Events()
-	for _, evt := range evts {
-		switch v := evt.(type) {
-		case widget.SubmitEvent:
-			text := v.Text
-			if len(text) == 0 {
-				continue
+	return func(c C) D {
+		// Handle editor events
+		for {
+			evt, ok := cp.Editor.Update(c)
+			if !ok {
+				break
 			}
-			cp.Run(d, text)
-			cp.Editor.SetText("")
+			switch v := evt.(type) {
+			case widget.SubmitEvent:
+				text := v.Text
+				if len(text) > 0 {
+					cp.Run(d, text)
+					cp.Editor.SetText("")
+				}
+			}
 		}
+
+		logsPanel := ZebraList(&cp.List, len(cp.Logs), func(c C, i int) D {
+			return Inset05(cp.Logs[i])(c)
+		})
+
+		return Rows(
+			Flexed(1, logsPanel),
+			Rigid(TextInput(&cp.Editor, "Write commands here")),
+		)(c)
 	}
 }
+
 
 func (cp *ConsolePanel) Run(d *Debugger, expr string) {
 	cp.Log(LogCmd, expr)

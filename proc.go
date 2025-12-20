@@ -94,7 +94,7 @@ type StructVarWidget struct {
 }
 
 func (w *StructVarWidget) Layout(c C) D {
-	if w.clickable.Clicked() {
+	if w.clickable.Clicked(c) {
 		w.open = !w.open
 	}
 
@@ -142,7 +142,7 @@ type MapVarWidget struct {
 }
 
 func (w *MapVarWidget) Layout(c C) D {
-	if w.clickable.Clicked() {
+	if w.clickable.Clicked(c) {
 		w.open = !w.open
 	}
 
@@ -217,7 +217,7 @@ type SliceVarWidget struct {
 }
 
 func (w *SliceVarWidget) Layout(c C) D {
-	if w.clickable.Clicked() {
+	if w.clickable.Clicked(c) {
 		w.open = !w.open
 	}
 

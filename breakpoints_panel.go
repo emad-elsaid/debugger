@@ -77,25 +77,27 @@ func (b *BreakpointsPanel) BreakpointsPanel(d *Debugger) W {
 }
 
 func (b *BreakpointsPanel) Toolbar(d *Debugger) W {
-	if b.EnableAll.Clicked() {
-		d.EnableAllBreakpoints()
+	return func(c C) D {
+		if b.EnableAll.Clicked(c) {
+			d.EnableAllBreakpoints()
+		}
+
+		if b.DisableAll.Clicked(c) {
+			d.DisableAllBreakpoints()
+		}
+
+		if b.ClearAll.Clicked(c) {
+			d.ClearAllBreakpoints()
+		}
+
+		IconFont := FontEnlarge(2)
+
+		return Background(ToolbarBgColor,
+			Columns(
+				Rigid(ToolbarButton(&b.EnableAll, IconFont(IconBreakPoint), "Enable All")),
+				Rigid(ToolbarButton(&b.DisableAll, IconFont(IconBreakPointDisabled), "Disable All")),
+				Rigid(ToolbarButton(&b.ClearAll, IconFont(IconDelete), "Clear All")),
+			),
+		)(c)
 	}
-
-	if b.DisableAll.Clicked() {
-		d.DisableAllBreakpoints()
-	}
-
-	if b.ClearAll.Clicked() {
-		d.ClearAllBreakpoints()
-	}
-
-	IconFont := FontEnlarge(2)
-
-	return Background(ToolbarBgColor,
-		Columns(
-			Rigid(ToolbarButton(&b.EnableAll, IconFont(IconBreakPoint), "Enable All")),
-			Rigid(ToolbarButton(&b.DisableAll, IconFont(IconBreakPointDisabled), "Disable All")),
-			Rigid(ToolbarButton(&b.ClearAll, IconFont(IconDelete), "Clear All")),
-		),
-	)
 }
