@@ -36,7 +36,7 @@ func (l *Tabs) Layout(tabs ...*TabChild) W {
 		if b, ok = l.Clickable[t.Name]; !ok {
 			b = &Clickable{}
 			l.Clickable[t.Name] = b
-		} else if b.Clicked() {
+		} else if b.Clicked(c) {
 			l.Active = t.Name
 		}
 

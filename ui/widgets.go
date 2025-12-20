@@ -27,12 +27,11 @@ var (
 	SpaceUnit  DP = 8
 	BorderSize DP = 1
 
-	fonts      = gofont.Collection()
-	fontShaper = text.NewShaper(fonts)
-	th         = material.NewTheme(fonts)
+	th = material.NewTheme()
 )
 
 func init() {
+	th.Shaper = text.NewShaper(text.WithCollection(gofont.Collection()))
 	th.TextSize = Theme.FontSize
 	th.Fg = Theme.TextColor
 }

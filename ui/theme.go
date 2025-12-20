@@ -18,7 +18,7 @@ type ThemeStyle struct {
 
 var Theme = ThemeStyle{
 	FontSize:      13,
-	FontFamily:    fontShaper,
+	FontFamily:    th.Shaper,
 	FontWeight:    font.Normal,
 	TextAlignment: text.Start,
 	TextColor:     BLACK_500,

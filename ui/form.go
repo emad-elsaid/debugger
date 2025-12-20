@@ -14,18 +14,20 @@ func LineEditor() widget.Editor {
 }
 
 func TextInput(editor *widget.Editor, hint string) W {
-	border := Border
+	return func(c C) D {
+		border := Border
 
-	if editor.Focused() {
-		border = BorderActive
+		if c.Source.Focused(editor) {
+			border = BorderActive
+		}
+
+		return Background(BackgroundColor,
+			Wrap(
+				material.Editor(th, editor, hint).Layout,
+				border, Inset1,
+			),
+		)(c)
 	}
-
-	return Background(BackgroundColor,
-		Wrap(
-			material.Editor(th, editor, hint).Layout,
-			border, Inset1,
-		),
-	)
 }
 
 func Button(clickable *Clickable, label string) W {
@@ -59,18 +61,20 @@ func CheckboxBtn(value bool, btn *Clickable) W {
 }
 
 func Checkbox(btn *Clickable, value bool, onclick func()) W {
-	if btn.Clicked() {
-		onclick()
-	}
+	return func(c C) D {
+		if btn.Clicked(c) {
+			onclick()
+		}
 
-	var icon W
-	if value {
-		icon = IconCheckboxActive
-	} else {
-		icon = IconCheckbox
-	}
+		var icon W
+		if value {
+			icon = IconCheckboxActive
+		} else {
+			icon = IconCheckbox
+		}
 
-	return LayoutToWidget(btn.Layout, icon)
+		return btn.Layout(c, icon)
+	}
 }
 
 func CheckboxBool(btn *Clickable, value *bool) W {
@@ -78,11 +82,11 @@ func CheckboxBool(btn *Clickable, value *bool) W {
 }
 
 func OnClick(btn *Clickable, w W, onclick func()) W {
-	if btn.Clicked() {
-		onclick()
-	}
-
 	return func(c C) D {
+		if btn.Clicked(c) {
+			onclick()
+		}
+
 		return btn.Layout(c, w)
 	}
 }

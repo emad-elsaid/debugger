@@ -89,7 +89,7 @@ func (d *DirectoryBrowser) Layout(dist *string) W {
 			d.Btns[p] = btn
 		}
 
-		if btn.Clicked() {
+		if btn.Clicked(c) {
 			*dist = p
 		}
 
@@ -101,7 +101,7 @@ func (d *DirectoryBrowser) Layout(dist *string) W {
 	}
 
 	return func(c C) D {
-		if d.Up.Clicked() {
+		if d.Up.Clicked(c) {
 			*dist = path.Dir(*dist)
 		}
 

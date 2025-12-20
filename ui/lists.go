@@ -37,15 +37,13 @@ func NewClickableList() ClickableList {
 }
 
 func (l *ClickableList) Layout(len int, ele layout.ListElement, onClick func(i int)) W {
-	for i, cl := range l.Btns {
-		if cl.Clicked() {
-			onClick(i)
-		}
-	}
-
 	return ZebraList(&l.List, len, func(c C, i int) D {
 		if _, ok := l.Btns[i]; !ok {
 			l.Btns[i] = &Clickable{}
+		}
+
+		if l.Btns[i].Clicked(c) {
+			onClick(i)
 		}
 
 		w := func(c C) D { return ele(c, i) }
