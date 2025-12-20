@@ -158,7 +158,7 @@ func (src *SourcePanel) LayoutLines(d *Debugger, running []int, bps map[int]bool
 			src.BpBtns[i] = new(Clickable)
 		}
 		btn := src.BpBtns[i]
-		if btn.Clicked() {
+		if btn.Clicked(c) {
 			BpClick(i)
 		}
 
@@ -184,7 +184,7 @@ func (src *SourcePanel) LayoutLines(d *Debugger, running []int, bps map[int]bool
 		bpWithButton := LayoutToWidget(btn.Layout, bp)
 
 		lineBtn := src.LineBtn(i)
-		if lineBtn.Clicked() {
+		if lineBtn.Clicked(c) {
 			d.Line = i + 1
 			src.Line = i + 1
 		}

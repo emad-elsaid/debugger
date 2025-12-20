@@ -57,7 +57,8 @@ func RunWindowAndExit(debugger *Debugger) {
 }
 
 func EventLoop(debugger *Debugger) error {
-	for e := range win.Events() {
+	for {
+		e := win.Event()
 		switch e := e.(type) {
 		case app.DestroyEvent:
 			debugger.Detach(true)
@@ -68,8 +69,6 @@ func EventLoop(debugger *Debugger) error {
 			e.Frame(c.Ops)
 		}
 	}
-
-	return nil
 }
 
 func Refresher() {

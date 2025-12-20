@@ -33,51 +33,55 @@ func (s *SideBar) Layout(d *Debugger) W {
 }
 
 func (s *SideBar) Watches(d *Debugger) W {
-	evts := s.watchEditor.Events()
-	for _, evt := range evts {
-		switch v := evt.(type) {
-		case widget.SubmitEvent:
-			text := v.Text
-			if len(text) == 0 {
-				continue
+	return func(c C) D {
+		// Handle editor events
+		for {
+			evt, ok := s.watchEditor.Update(c)
+			if !ok {
+				break
+			}
+			switch v := evt.(type) {
+			case widget.SubmitEvent:
+				text := v.Text
+				if len(text) > 0 {
+					d.CreateWatch(text)
+					s.watchEditor.SetText("")
+				}
+			}
+		}
+
+		s.ExecuteWatches(d)
+
+		ele := func(c C, i int) D {
+			if i >= len(s.watches) {
+				return D{}
+			}
+			expr := d.WatchesExpr[i]
+			varW := s.watches[i]
+			var w W
+			if varW == nil {
+				w = Label(expr)
+			} else {
+				w = varW.Layout
 			}
 
-			d.CreateWatch(text)
-			s.watchEditor.SetText("")
-		}
-	}
+			del := func() { d.DeleteWatch(expr) }
 
-	s.ExecuteWatches(d)
-
-	ele := func(c C, i int) D {
-		if i >= len(s.watches) {
-			return D{}
-		}
-		expr := d.WatchesExpr[i]
-		varW := s.watches[i]
-		var w W
-		if varW == nil {
-			w = Label(expr)
-		} else {
-			w = varW.Layout
+			return Inset05(
+				Columns(
+					Flexed(1, w),
+					Rigid(OnClick(s.clickables.Get(expr), IconDelete, del)),
+				),
+			)(c)
 		}
 
-		del := func() { d.DeleteWatch(expr) }
-
-		return Inset05(
-			Columns(
-				Flexed(1, w),
-				Rigid(OnClick(s.clickables.Get(expr), IconDelete, del)),
+		return Panel("Watches",
+			Rows(
+				Rigid(ZebraList(&s.watchesList, len(d.WatchesExpr), ele)),
+				Rigid(TextInput(&s.watchEditor, "New watch expression...")),
 			),
 		)(c)
 	}
-
-	return Panel("Watches",
-		Rows(
-			Rigid(ZebraList(&s.watchesList, len(d.WatchesExpr), ele)),
-			Rigid(TextInput(&s.watchEditor, "New watch expression...")),
-		),
-	)
 }
 
 func (s *SideBar) ExecuteWatches(d *Debugger) {
