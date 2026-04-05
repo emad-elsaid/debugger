@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  
+  <object class="GtkBox" id="breakpoints_panel">
+    <property name="orientation">vertical</property>
+    <property name="spacing">0</property>
+    <child>
+      <object class="GtkBox" id="breakpoints_toolbar">
+        <property name="orientation">horizontal</property>
+        <property name="spacing">6</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">6</property>
+        <style>
+          <class name="toolbar"/>
+        </style>
+        <child>
+          <object class="GtkButton" id="enable_all_btn">
+            <property name="label">Enable All</property>
+            <property name="tooltip-text">Enable all breakpoints</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="disable_all_btn">
+            <property name="label">Disable All</property>
+            <property name="tooltip-text">Disable all breakpoints</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="clear_all_btn">
+            <property name="label">Clear All</property>
+            <property name="tooltip-text">Remove all breakpoints</property>
+            <style>
+              <class name="destructive-action"/>
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkScrolledWindow" id="breakpoints_scrolled">
+        <property name="vexpand">true</property>
+        <property name="hexpand">true</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <property name="margin-bottom">12</property>
+        <child>
+          <object class="GtkListBox" id="breakpoints_list">
+            <property name="selection-mode">none</property>
+            <style>
+              <class name="boxed-list"/>
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

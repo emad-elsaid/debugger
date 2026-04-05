@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  
+  <object class="GtkBox" id="memory_panel">
+    <property name="orientation">vertical</property>
+    <property name="spacing">5</property>
+    <property name="margin-start">12</property>
+    <property name="margin-end">12</property>
+    <property name="margin-top">12</property>
+    <property name="margin-bottom">12</property>
+    
+    <child>
+      <object class="GtkBox" id="address_box">
+        <property name="orientation">horizontal</property>
+        <property name="spacing">5</property>
+        <child>
+          <object class="GtkLabel" id="address_label">
+            <property name="label">Address:</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="address_entry">
+            <property name="placeholder-text">0x...</property>
+            <property name="hexpand">true</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="go_button">
+            <property name="label">Go</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    
+    <child>
+      <object class="GtkScrolledWindow" id="memory_scrolled">
+        <property name="vexpand">true</property>
+        <child>
+          <object class="GtkTextView" id="memory_text_view">
+            <property name="editable">false</property>
+            <property name="cursor-visible">false</property>
+            <property name="monospace">true</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

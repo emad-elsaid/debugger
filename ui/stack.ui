@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  
+  <object class="GtkScrolledWindow" id="stack_panel">
+    <property name="vexpand">true</property>
+    <property name="hexpand">true</property>
+    <child>
+      <object class="GtkListBox" id="stack_list">
+        <property name="selection-mode">single</property>
+        <style>
+          <class name="boxed-list"/>
+        </style>
+      </object>
+    </child>
+  </object>
+</interface>

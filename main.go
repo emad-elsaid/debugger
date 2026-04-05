@@ -2,24 +2,25 @@ package main
 
 import (
 	"log"
+	"log/slog"
 	"os"
-	"time"
 
-	"gioui.org/app"
-	"gioui.org/io/system"
-	"gioui.org/layout"
-	"gioui.org/op"
-	. "github.com/emad-elsaid/debugger/ui"
+	"github.com/diamondburned/gotk4-adwaita/pkg/adw"
+	"github.com/diamondburned/gotk4/pkg/gio/v2"
 )
 
-var (
-	win  = app.NewWindow()
-	ops  op.Ops
-	tree W
-)
+var dbg *Debugger
 
 func main() {
-	win.Option(app.Title("Go Debugger"))
+	log.Println("main: starting (before slog setup)")
+
+	// Set log level to DEBUG
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+		Level: slog.LevelDebug,
+	})))
+
+	log.Println("main: slog setup complete")
+	slog.Debug("main: starting")
 
 	cmdAndArgs := os.Args[1:]
 	if len(cmdAndArgs) == 0 {
@@ -27,55 +28,49 @@ func main() {
 	}
 
 	cmd := cmdAndArgs[0]
+	slog.Debug("main: command", "cmd", cmd)
 
 	args := []string{"."}
-	if len(cmd) > 1 {
+	if len(cmdAndArgs) > 1 {
 		args = cmdAndArgs[1:]
 	}
+	slog.Debug("main: args", "args", args)
 
-	debugger, err := NewDebugger("debug", args, true, cmd == "test")
+	app := adw.NewApplication("com.github.emad-elsaid.debugger", gio.ApplicationFlagsNone)
+	slog.Debug("main: app created")
+
+	var err error
+	slog.Debug("main: creating debugger")
+	dbg, err = NewDebugger("debug", args, true, cmd == "test")
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
+	slog.Debug("main: debugger created")
 
-	screen, err := NewDebugScreen(debugger)
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
+	app.ConnectActivate(func() {
+		slog.Info("App activated, creating window")
+		win := NewDebugWindow(app, dbg)
+		win.Present()
+		slog.Info("Window presented")
+	})
 
-	tree = screen.Layout
-
-	go RunWindowAndExit(debugger)
-	go Refresher()
-	app.Main()
-}
-
-func RunWindowAndExit(debugger *Debugger) {
-	if err := EventLoop(debugger); err != nil {
-		log.Fatal(err)
-	}
-	os.Exit(0)
-}
-
-func EventLoop(debugger *Debugger) error {
-	for e := range win.Events() {
-		switch e := e.(type) {
-		case system.DestroyEvent:
-			debugger.Detach(true)
-			return e.Err
-		case system.FrameEvent:
-			c := layout.NewContext(&ops, e)
-			tree(c)
-			e.Frame(c.Ops)
+	// Handle shutdown to clean up debugger
+	app.ConnectShutdown(func() {
+		slog.Info("App shutdown signal received")
+		if dbg.Debugger != nil {
+			// Detach in background - don't block shutdown
+			go func() {
+				slog.Info("Detaching debugger")
+				dbg.Detach(true)
+				slog.Info("Debugger detached")
+			}()
 		}
-	}
+		slog.Info("Shutdown complete")
+	})
 
-	return nil
-}
-
-func Refresher() {
-	for {
-		win.Invalidate()
-		time.Sleep(time.Millisecond * 100)
-	}
+	slog.Info("Starting app.Run()")
+	// Only pass application name to GTK, not debugger arguments
+	code := app.Run([]string{os.Args[0]})
+	slog.Info("app.Run() exited", "code", code)
+	os.Exit(code)
 }

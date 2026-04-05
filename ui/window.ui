@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="Adw" version="1.0"/>
+  
+  <!-- Main window -->
+  <object class="AdwApplicationWindow" id="main_window">
+    <property name="title">Go Debugger</property>
+    <property name="default-width">1200</property>
+    <property name="default-height">800</property>
+    <child>
+      <object class="GtkBox" id="main_box">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="AdwHeaderBar" id="header_bar">
+            <child type="start">
+              <object class="GtkButton" id="continue_btn">
+                <property name="icon-name">media-playback-start-symbolic</property>
+                <property name="tooltip-text">Continue (F5)</property>
+              </object>
+            </child>
+            <child type="start">
+              <object class="GtkButton" id="pause_btn">
+                <property name="icon-name">media-playback-pause-symbolic</property>
+                <property name="tooltip-text">Pause</property>
+              </object>
+            </child>
+            <child type="start">
+              <object class="GtkButton" id="restart_btn">
+                <property name="icon-name">view-refresh-symbolic</property>
+                <property name="tooltip-text">Restart (Ctrl+Shift+F5)</property>
+              </object>
+            </child>
+            <child type="start">
+              <object class="GtkSeparator" id="separator1">
+                <property name="orientation">vertical</property>
+              </object>
+            </child>
+            <child type="start">
+              <object class="GtkButton" id="step_btn">
+                <property name="icon-name">go-down-symbolic</property>
+                <property name="tooltip-text">Step Into (F11)</property>
+              </object>
+            </child>
+            <child type="start">
+              <object class="GtkButton" id="next_btn">
+                <property name="icon-name">go-next-symbolic</property>
+                <property name="tooltip-text">Step Over (F10)</property>
+              </object>
+            </child>
+            <child type="start">
+              <object class="GtkButton" id="step_out_btn">
+                <property name="icon-name">go-up-symbolic</property>
+                <property name="tooltip-text">Step Out (Shift+F11)</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkPaned" id="bottom_pane">
+            <property name="orientation">vertical</property>
+            <property name="position">600</property>
+            <property name="vexpand">true</property>
+            <child>
+              <object class="GtkPaned" id="main_pane">
+                <property name="orientation">horizontal</property>
+                <property name="position">900</property>
+                <!-- Source view will be inserted here programmatically -->
+                <!-- Sidebar will be inserted here programmatically -->
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="bottom_box">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="AdwTabBar" id="tab_bar">
+                    <property name="view">tab_view</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwTabView" id="tab_view">
+                    <child>
+                      <object class="AdwTabPage" id="console_page">
+                        <property name="title">Console</property>
+                        <property name="child">
+                          <object class="GtkBox" id="console_placeholder"/>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwTabPage" id="stack_page">
+                        <property name="title">Stack</property>
+                        <property name="child">
+                          <object class="GtkBox" id="stack_placeholder"/>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwTabPage" id="types_page">
+                        <property name="title">Types</property>
+                        <property name="child">
+                          <object class="GtkBox" id="types_placeholder"/>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwTabPage" id="functions_page">
+                        <property name="title">Functions</property>
+                        <property name="child">
+                          <object class="GtkBox" id="functions_placeholder"/>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwTabPage" id="packages_page">
+                        <property name="title">Packages</property>
+                        <property name="child">
+                          <object class="GtkBox" id="packages_placeholder"/>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwTabPage" id="sources_page">
+                        <property name="title">Sources</property>
+                        <property name="child">
+                          <object class="GtkBox" id="sources_placeholder"/>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwTabPage" id="disassembly_page">
+                        <property name="title">Disassembly</property>
+                        <property name="child">
+                          <object class="GtkBox" id="disassembly_placeholder"/>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwTabPage" id="breakpoints_page">
+                        <property name="title">Breakpoints</property>
+                        <property name="child">
+                          <object class="GtkBox" id="breakpoints_placeholder"/>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwTabPage" id="openfiles_page">
+                        <property name="title">Open Files</property>
+                        <property name="child">
+                          <object class="GtkBox" id="openfiles_placeholder"/>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwTabPage" id="memory_page">
+                        <property name="title">Memory</property>
+                        <property name="child">
+                          <object class="GtkBox" id="memory_placeholder"/>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

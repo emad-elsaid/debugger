@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="Adw" version="1.0"/>
+  
+  <object class="GtkBox" id="packages_panel">
+    <property name="orientation">vertical</property>
+    <property name="spacing">0</property>
+    
+    <child>
+      <object class="GtkBox" id="search_box">
+        <property name="orientation">horizontal</property>
+        <property name="spacing">6</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">6</property>
+        <child>
+          <object class="GtkSearchEntry" id="packages_search_entry">
+            <property name="placeholder-text">Search packages...</property>
+            <property name="hexpand">true</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    
+    <child>
+      <object class="AdwPreferencesGroup" id="packages_group">
+        <property name="title">Packages</property>
+        <property name="description">All packages in the target binary</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <property name="margin-bottom">12</property>
+        <child>
+          <object class="GtkListBox" id="packages_list">
+            <property name="selection-mode">none</property>
+            <property name="hexpand">true</property>
+            <style>
+              <class name="boxed-list"/>
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

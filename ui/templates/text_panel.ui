@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  Reusable Template: Text Panel (Console/Log Display)
+  
+  Usage: Copy this template and customize:
+  - Change IDs (text_panel, text_view)
+  - Set editable property (false for console, true for editor)
+  - Add wrap-mode if needed
+  
+  Standard spacing:
+  - Outer: 12px margins on all sides
+  - Inner: 6px text margins (left/right/top/bottom)
+-->
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  
+  <object class="GtkScrolledWindow" id="text_panel">
+    <property name="vexpand">true</property>
+    <property name="hexpand">true</property>
+    <property name="margin-start">12</property>
+    <property name="margin-end">12</property>
+    <property name="margin-top">12</property>
+    <property name="margin-bottom">12</property>
+    <child>
+      <object class="GtkTextView" id="text_view">
+        <property name="editable">false</property>
+        <property name="monospace">true</property>
+        <property name="left-margin">6</property>
+        <property name="right-margin">6</property>
+        <property name="top-margin">6</property>
+        <property name="bottom-margin">6</property>
+      </object>
+    </child>
+  </object>
+</interface>

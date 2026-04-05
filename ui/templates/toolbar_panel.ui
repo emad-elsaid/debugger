@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  Reusable Template: Toolbar Panel with List
+  
+  Usage: Copy this template and customize:
+  - Change IDs (toolbar_panel, toolbar, scrolled, list_box)
+  - Add toolbar buttons inside toolbar box
+  
+  Standard spacing:
+  - Toolbar: 12px margins (top/sides), 6px bottom
+  - ScrolledWindow: 12px margins (sides/bottom)
+-->
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  
+  <object class="GtkBox" id="toolbar_panel">
+    <property name="orientation">vertical</property>
+    <property name="spacing">0</property>
+    
+    <!-- Toolbar with Standard Margins -->
+    <child>
+      <object class="GtkBox" id="toolbar">
+        <property name="orientation">horizontal</property>
+        <property name="spacing">6</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">6</property>
+        <style>
+          <class name="toolbar"/>
+        </style>
+        
+        <!-- Add toolbar buttons here -->
+        <child>
+          <object class="GtkButton" id="action_button">
+            <property name="label">Action</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    
+    <!-- Scrolled List with Standard Margins -->
+    <child>
+      <object class="GtkScrolledWindow" id="scrolled">
+        <property name="vexpand">true</property>
+        <property name="hexpand">true</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <property name="margin-bottom">12</property>
+        <child>
+          <object class="GtkListBox" id="list_box">
+            <property name="selection-mode">none</property>
+            <style>
+              <class name="boxed-list"/>
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

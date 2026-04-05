@@ -1,0 +1,24 @@
+/* Types panel - dynamically created labels */
+.types-list-label {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* Stack panel - frame index prefix */
+.stack-frame-prefix {
+  padding-right: 12px;
+}
+
+/* Sidebar - error state styling */
+.watch-error {
+  color: @error_color;
+}
+
+/* Sidebar - empty state placeholder */
+.empty-state-label {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  opacity: 0.5;
+}

@@ -1,101 +1,210 @@
 package main
 
 import (
-	"gioui.org/widget"
-	. "github.com/emad-elsaid/debugger/ui"
-	"golang.org/x/text/language"
-	"golang.org/x/text/message"
+	"fmt"
+	"html"
+	"log/slog"
+
+	"github.com/diamondburned/gotk4-adwaita/pkg/adw"
+	"github.com/diamondburned/gotk4/pkg/glib/v2"
+	"github.com/diamondburned/gotk4/pkg/gtk/v4"
+	. "github.com/emad-elsaid/debugger/structs"
 )
 
-var lfmt = message.NewPrinter(language.English)
+// Sidebar contains watches and breakpoints
+type Sidebar struct {
+	*gtk.Box
+	debugger *Debugger
 
-type SideBar struct {
-	watches           []VarWidget
-	watchesList       List
-	watchEditor       widget.Editor
-	clickables        Clickables
-	debuggerLastState DebuggerState
+	watchInput      *gtk.Entry
+	watchAddBtn     *gtk.Button
+	watchesList     *gtk.ListBox
+	breakpointsList *gtk.ListBox
 }
 
-func NewSideBar() SideBar {
-	return SideBar{
-		watches:     []VarWidget{},
-		watchesList: NewVerticalList(),
-		watchEditor: LineEditor(),
-		clickables:  NewClickables(),
-	}
-}
+// NewSidebar creates a collapsible sidebar
+func NewSidebar(debugger *Debugger) *Sidebar {
+	slog.Debug("NewSidebar: loading UI from XML")
+	builder := gtk.NewBuilderFromFile("ui/sidebar.ui")
 
-func (s *SideBar) Layout(d *Debugger) W {
-	return Background(SidebarBgColor, Rows(
-		Rigid(s.Watches(d)),
-	))
-}
+	slog.Debug("NewSidebar: getting widgets from builder")
+	box := builder.GetObject("sidebar_box").Cast().(*gtk.Box)
+	watchInput := builder.GetObject("watch_input").Cast().(*gtk.Entry)
+	watchAddBtn := builder.GetObject("watch_add_button").Cast().(*gtk.Button)
+	watchesList := builder.GetObject("watches_list").Cast().(*gtk.ListBox)
+	breakpointsList := builder.GetObject("breakpoints_list").Cast().(*gtk.ListBox)
 
-func (s *SideBar) Watches(d *Debugger) W {
-	evts := s.watchEditor.Events()
-	for _, evt := range evts {
-		switch v := evt.(type) {
-		case widget.SubmitEvent:
-			text := v.Text
-			if len(text) == 0 {
-				continue
-			}
-
-			d.CreateWatch(text)
-			s.watchEditor.SetText("")
-		}
+	sb := &Sidebar{
+		Box:             box,
+		debugger:        debugger,
+		watchInput:      watchInput,
+		watchAddBtn:     watchAddBtn,
+		watchesList:     watchesList,
+		breakpointsList: breakpointsList,
 	}
 
-	s.ExecuteWatches(d)
+	// Setup watch input handlers
+	sb.setupWatchInput()
 
-	ele := func(c C, i int) D {
-		if i >= len(s.watches) {
-			return D{}
-		}
-		expr := d.WatchesExpr[i]
-		varW := s.watches[i]
-		var w W
-		if varW == nil {
-			w = Label(expr)
-		} else {
-			w = varW.Layout
-		}
+	// Subscribe to events
+	sb.subscribeToEvents()
 
-		del := func() { d.DeleteWatch(expr) }
+	// Initial population
+	slog.Debug("NewSidebar: triggering initial breakpoints update")
+	sb.updateBreakpoints()
 
-		return Inset05(
-			Columns(
-				Flexed(1, w),
-				Rigid(OnClick(s.clickables.Get(expr), IconDelete, del)),
-			),
-		)(c)
-	}
-
-	return Panel("Watches",
-		Rows(
-			Rigid(ZebraList(&s.watchesList, len(d.WatchesExpr), ele)),
-			Rigid(TextInput(&s.watchEditor, "New watch expression...")),
-		),
-	)
+	return sb
 }
 
-func (s *SideBar) ExecuteWatches(d *Debugger) {
-	if d.State == s.debuggerLastState && len(s.watches) == len(d.WatchesExpr) {
+func (sb *Sidebar) setupWatchInput() {
+	addWatch := func() {
+		expr := sb.watchInput.Text()
+		if expr == "" {
+			return
+		}
+		sb.debugger.CreateWatch(expr)
+		sb.watchInput.SetText("")
+		sb.watchInput.GrabFocus()
+	}
+
+	sb.watchAddBtn.ConnectClicked(func() {
+		addWatch()
+	})
+
+	sb.watchInput.ConnectActivate(func() {
+		addWatch()
+	})
+}
+
+func (sb *Sidebar) subscribeToEvents() {
+	sb.debugger.EventBus.Subscribe(EventWatchesChanged, func(event DebuggerEvent, data EventData) {
+		glib.IdleAdd(func() bool {
+			sb.updateWatches()
+			return false
+		})
+	})
+
+	sb.debugger.EventBus.Subscribe(EventBreakpointsChanged, func(event DebuggerEvent, data EventData) {
+		glib.IdleAdd(func() bool {
+			sb.updateBreakpoints()
+			return false
+		})
+	})
+
+	sb.debugger.EventBus.Subscribe(EventStateChanged, func(event DebuggerEvent, data EventData) {
+		glib.IdleAdd(func() bool {
+			sb.updateWatches()
+			return false
+		})
+	})
+
+	sb.debugger.EventBus.Subscribe(EventStackFrameChanged, func(event DebuggerEvent, data EventData) {
+		glib.IdleAdd(func() bool {
+			sb.updateWatches()
+			return false
+		})
+	})
+}
+
+func (sb *Sidebar) updateWatches() {
+	// Clear existing
+	for {
+		row := sb.watchesList.FirstChild()
+		if row == nil {
+			break
+		}
+		sb.watchesList.Remove(row)
+	}
+
+	// Show empty state if no watches
+	if len(sb.debugger.WatchesExpr) == 0 {
+		placeholder := adw.NewActionRow()
+		placeholder.SetTitle("No watches")
+		placeholder.SetSubtitle("Add expressions to monitor their values")
+		placeholder.SetSensitive(false)
+		placeholder.AddCSSClass("empty-state-label")
+		sb.watchesList.Append(placeholder)
 		return
 	}
 
-	s.debuggerLastState = d.State
+	// Add watches
+	for _, expr := range sb.debugger.WatchesExpr {
+		row := adw.NewActionRow()
+		row.SetTitle(html.EscapeString(expr))
 
-	results := []VarWidget{}
-	for _, expr := range d.WatchesExpr {
-		val, err := d.ExecuteExpr(expr)
-		if err != nil {
-			results = append(results, nil)
+		// Evaluate expression
+		if v, err := sb.debugger.ExecuteExpr(expr); err == nil && v != nil {
+			val := "nil"
+			if v.Value != nil {
+				val = v.Value.ExactString()
+				if len(val) > 50 {
+					val = val[:47] + "..."
+				}
+			}
+			row.SetSubtitle(html.EscapeString(val))
 		} else {
-			results = append(results, NewVarWidget(val))
+			errorText := fmt.Sprintf("<span foreground=\"red\">%s</span>", html.EscapeString("Error evaluating"))
+			row.SetSubtitle(errorText)
+			row.SetUseMarkup(true)
 		}
+
+		// Delete button
+		deleteBtn := gtk.NewButtonFromIconName("user-trash-symbolic")
+		deleteBtn.SetVAlign(gtk.AlignCenter)
+		deleteBtn.AddCSSClass("flat")
+		exprCopy := expr // Capture for closure
+		deleteBtn.ConnectClicked(func() {
+			sb.debugger.DeleteWatch(exprCopy)
+		})
+		row.AddSuffix(deleteBtn)
+		row.SetActivatableWidget(deleteBtn)
+
+		sb.watchesList.Append(row)
+	}
+}
+
+func (sb *Sidebar) updateBreakpoints() {
+	// Clear existing
+	for {
+		row := sb.breakpointsList.FirstChild()
+		if row == nil {
+			break
+		}
+		sb.breakpointsList.Remove(row)
 	}
 
-	s.watches = results
+	// Add breakpoints
+	for _, bp := range sb.debugger.Breakpoints() {
+		row := adw.NewActionRow()
+		funcName := bp.FunctionName
+		if funcName == "" {
+			funcName = "unknown"
+		}
+		row.SetTitle(html.EscapeString(funcName))
+		row.SetSubtitle(html.EscapeString(fmt.Sprintf("%s:%d", bp.File, bp.Line)))
+
+		// Toggle button
+		toggle := gtk.NewSwitch()
+		toggle.SetActive(!bp.Disabled)
+		toggle.SetVAlign(gtk.AlignCenter)
+		bpCopy := bp // Capture for closure
+		toggle.ConnectStateSet(func(state bool) bool {
+			bpCopy.Disabled = !state
+			sb.debugger.AmendBreakpoint(bpCopy)
+			return false
+		})
+
+		// Delete button
+		deleteBtn := gtk.NewButtonFromIconName("user-trash-symbolic")
+		deleteBtn.SetVAlign(gtk.AlignCenter)
+		deleteBtn.AddCSSClass("flat")
+		deleteBtn.ConnectClicked(func() {
+			sb.debugger.ClearBreakpoint(bpCopy)
+		})
+
+		row.AddSuffix(toggle)
+		row.AddSuffix(deleteBtn)
+
+		sb.breakpointsList.Append(row)
+	}
 }

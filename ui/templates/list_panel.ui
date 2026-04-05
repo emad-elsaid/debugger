@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  Reusable Template: List Panel with Search
+  
+  Usage: Copy this template and customize:
+  - Change IDs (list_panel, search_entry, scrolled, list_box)
+  - Update placeholder text
+  - Adjust selection-mode if needed
+  
+  Standard spacing:
+  - Search box: 12px margins (top/sides), 6px bottom
+  - ScrolledWindow: 12px margins (sides/bottom)
+-->
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  
+  <object class="GtkBox" id="list_panel">
+    <property name="orientation">vertical</property>
+    <property name="spacing">6</property>
+    
+    <!-- Search Box with Standard Margins -->
+    <child>
+      <object class="GtkBox">
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">6</property>
+        <child>
+          <object class="GtkSearchEntry" id="search_entry">
+            <property name="placeholder-text">Search...</property>
+            <property name="hexpand">true</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    
+    <!-- Scrolled List with Standard Margins -->
+    <child>
+      <object class="GtkScrolledWindow" id="scrolled">
+        <property name="vexpand">true</property>
+        <property name="hexpand">true</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <property name="margin-bottom">12</property>
+        <child>
+          <object class="GtkListBox" id="list_box">
+            <property name="selection-mode">none</property>
+            <style>
+              <class name="boxed-list"/>
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
