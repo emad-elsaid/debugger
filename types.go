@@ -5,7 +5,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/diamondburned/gotk4/pkg/glib/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 	. "github.com/emad-elsaid/debugger/structs"
 	"github.com/go-delve/delve/pkg/proc"
@@ -41,18 +40,12 @@ func NewTypesPanel(debugger *Debugger) *TypesPanel {
 }
 
 func (tp *TypesPanel) subscribeToEvents() {
-	tp.debugger.EventBus.Subscribe(EventStateChanged, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			tp.loadTypes()
-			return false
-		})
+	tp.debugger.Signals.Connect(EventStateChanged, func(event DebuggerEvent, data EventData) {
+		tp.loadTypes()
 	})
 
-	tp.debugger.EventBus.Subscribe(EventProcessRestarted, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			tp.loadTypes()
-			return false
-		})
+	tp.debugger.Signals.Connect(EventProcessRestarted, func(event DebuggerEvent, data EventData) {
+		tp.loadTypes()
 	})
 }
 
@@ -99,11 +92,6 @@ func (tp *TypesPanel) gatherTypesData(target *proc.Target) {
 	tp.types = typeNames
 	sort.Strings(tp.types)
 	slog.Debug("Types: data gathered", "types", len(tp.types))
-}
-
-func (tp *TypesPanel) loadTypesWithTarget(target *proc.Target) {
-	tp.gatherTypesData(target)
-	tp.updateList()
 }
 
 func (tp *TypesPanel) updateList() {

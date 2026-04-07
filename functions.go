@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/diamondburned/gotk4-adwaita/pkg/adw"
-	"github.com/diamondburned/gotk4/pkg/glib/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 	. "github.com/emad-elsaid/debugger/structs"
 	"github.com/go-delve/delve/pkg/proc"
@@ -56,11 +55,8 @@ func NewFunctionsPanel(debugger *Debugger) *FunctionsPanel {
 		fp.listBox.InvalidateFilter()
 	})
 
-	fp.debugger.EventBus.Subscribe(EventProcessRestarted, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			fp.loadFunctions()
-			return false
-		})
+	fp.debugger.Signals.Connect(EventProcessRestarted, func(event DebuggerEvent, data EventData) {
+		fp.loadFunctions()
 	})
 
 	// Don't populate during construction - will update when process stops
@@ -137,12 +133,6 @@ func (fp *FunctionsPanel) gatherFunctionsData(target *proc.Target) {
 	})
 
 	slog.Debug("Functions: data gathered", "functions", len(fp.allFunctions))
-}
-
-func (fp *FunctionsPanel) loadFunctionsWithTarget(target *proc.Target) {
-	fp.gatherFunctionsData(target)
-	slog.Debug("Functions: updating list", "functions", len(fp.allFunctions))
-	fp.updateList()
 }
 
 func (fp *FunctionsPanel) updateList() {

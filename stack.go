@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 
 	"github.com/diamondburned/gotk4-adwaita/pkg/adw"
-	"github.com/diamondburned/gotk4/pkg/glib/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 	"github.com/go-delve/delve/pkg/proc"
 )
@@ -45,11 +44,8 @@ func NewStackPanel(debugger *Debugger) *StackPanel {
 }
 
 func (sp *StackPanel) subscribeToEvents() {
-	sp.debugger.EventBus.Subscribe(EventStateChanged, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			sp.updateStack()
-			return false
-		})
+	sp.debugger.Signals.Connect(EventStateChanged, func(event DebuggerEvent, data EventData) {
+		sp.updateStack()
 	})
 }
 
@@ -202,7 +198,7 @@ func (sp *StackPanel) onFrameSelected(frameIndex int) {
 	line := frame.Current.Line
 
 	// Emit events to notify other components
-	sp.debugger.EventBus.Emit(EventStackFrameChanged, EventData{
+	sp.debugger.Signals.Emit(EventStackFrameChanged, EventData{
 		StackFrame: frameIndex,
 		File:       file,
 		Line:       line,

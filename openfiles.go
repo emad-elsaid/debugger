@@ -11,7 +11,6 @@ import (
 
 	"github.com/diamondburned/gotk4-adwaita/pkg/adw"
 	"github.com/diamondburned/gotk4/pkg/gio/v2"
-	"github.com/diamondburned/gotk4/pkg/glib/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 	. "github.com/emad-elsaid/debugger/structs"
 	"github.com/go-delve/delve/pkg/proc"
@@ -79,12 +78,9 @@ func (p *OpenFilesPanel) setupHandlers() {
 }
 
 func (p *OpenFilesPanel) subscribeToEvents() {
-	p.debugger.EventBus.Subscribe(EventStateChanged, func(event DebuggerEvent, data EventData) {
+	p.debugger.Signals.Connect(EventStateChanged, func(event DebuggerEvent, data EventData) {
 		if data.State != nil && !data.State.Running {
-			glib.IdleAdd(func() bool {
-				p.updateFileList()
-				return false
-			})
+			p.updateFileList()
 		}
 	})
 }

@@ -65,18 +65,12 @@ func NewSourcesPanel(debugger *Debugger) *SourcesPanel {
 }
 
 func (sp *SourcesPanel) subscribeToEvents() {
-	sp.debugger.EventBus.Subscribe(EventStateChanged, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			sp.loadSources()
-			return false
-		})
+	sp.debugger.Signals.Connect(EventStateChanged, func(event DebuggerEvent, data EventData) {
+		sp.loadSources()
 	})
 
-	sp.debugger.EventBus.Subscribe(EventProcessRestarted, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			sp.loadSources()
-			return false
-		})
+	sp.debugger.Signals.Connect(EventProcessRestarted, func(event DebuggerEvent, data EventData) {
+		sp.loadSources()
 	})
 }
 
@@ -131,12 +125,6 @@ func (sp *SourcesPanel) gatherSourcesData(target *proc.Target) {
 
 	sort.Strings(sp.sources)
 	slog.Debug("Sources: data gathered", "sources", len(sp.sources))
-}
-
-func (sp *SourcesPanel) loadSourcesWithTarget(target *proc.Target) {
-	sp.gatherSourcesData(target)
-	slog.Debug("Sources: updating tree", "sources", len(sp.sources))
-	sp.updateTree()
 }
 
 func (sp *SourcesPanel) updateTree() {

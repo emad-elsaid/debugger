@@ -9,7 +9,6 @@ import (
 	. "github.com/emad-elsaid/debugger/structs"
 
 	"github.com/diamondburned/gotk4/pkg/gdk/v4"
-	"github.com/diamondburned/gotk4/pkg/glib/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 	"github.com/go-delve/delve/service/api"
 	"libdb.so/gotk4-sourceview/pkg/gtksource/v5"
@@ -164,27 +163,18 @@ func (sv *SourceView) cycleBreakpoint(line int) {
 }
 
 func (sv *SourceView) subscribeToEvents() {
-	sv.debugger.EventBus.Subscribe(EventFileChanged, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			sv.LoadFile(data.File, data.Line)
-			return false
-		})
+	sv.debugger.Signals.Connect(EventFileChanged, func(event DebuggerEvent, data EventData) {
+		sv.LoadFile(data.File, data.Line)
 	})
 
-	sv.debugger.EventBus.Subscribe(EventBreakpointsChanged, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			sv.updateBreakpoints()
-			return false
-		})
+	sv.debugger.Signals.Connect(EventBreakpointsChanged, func(event DebuggerEvent, data EventData) {
+		sv.updateBreakpoints()
 	})
 
-	sv.debugger.EventBus.Subscribe(EventStateChanged, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			if data.State != nil && !data.State.Exited {
-				sv.highlightCurrentLine()
-			}
-			return false
-		})
+	sv.debugger.Signals.Connect(EventStateChanged, func(event DebuggerEvent, data EventData) {
+		if data.State != nil && !data.State.Exited {
+			sv.highlightCurrentLine()
+		}
 	})
 }
 

@@ -60,7 +60,7 @@ func (c *ConsolePanel) initTextTags() {
 }
 
 func (c *ConsolePanel) subscribeToEvents() {
-	c.debugger.EventBus.Subscribe(EventStateChanged, func(event DebuggerEvent, data EventData) {
+	c.debugger.Signals.Connect(EventStateChanged, func(event DebuggerEvent, data EventData) {
 		if data.State != nil {
 			if data.State.Exited {
 				c.LogInfo(fmt.Sprintf("Process exited with code %d", data.State.ExitStatus))
@@ -77,7 +77,7 @@ func (c *ConsolePanel) subscribeToEvents() {
 		}
 	})
 
-	c.debugger.EventBus.Subscribe(EventBreakpointsChanged, func(event DebuggerEvent, data EventData) {
+	c.debugger.Signals.Connect(EventBreakpointsChanged, func(event DebuggerEvent, data EventData) {
 		switch data.BreakpointOperation {
 		case BreakpointCreated:
 			if data.Breakpoint != nil {
@@ -104,27 +104,27 @@ func (c *ConsolePanel) subscribeToEvents() {
 		}
 	})
 
-	c.debugger.EventBus.Subscribe(EventProcessExited, func(event DebuggerEvent, data EventData) {
+	c.debugger.Signals.Connect(EventProcessExited, func(event DebuggerEvent, data EventData) {
 		c.LogError("Process exited")
 	})
 
-	c.debugger.EventBus.Subscribe(EventProcessRestarted, func(event DebuggerEvent, data EventData) {
+	c.debugger.Signals.Connect(EventProcessRestarted, func(event DebuggerEvent, data EventData) {
 		c.LogSuccess("Process restarted")
 	})
 
-	c.debugger.EventBus.Subscribe(EventContinue, func(event DebuggerEvent, data EventData) {
+	c.debugger.Signals.Connect(EventContinue, func(event DebuggerEvent, data EventData) {
 		c.LogInfo("Process continued")
 	})
 
-	c.debugger.EventBus.Subscribe(EventStep, func(event DebuggerEvent, data EventData) {
+	c.debugger.Signals.Connect(EventStep, func(event DebuggerEvent, data EventData) {
 		c.LogInfo("Step into")
 	})
 
-	c.debugger.EventBus.Subscribe(EventStepOver, func(event DebuggerEvent, data EventData) {
+	c.debugger.Signals.Connect(EventStepOver, func(event DebuggerEvent, data EventData) {
 		c.LogInfo("Step over")
 	})
 
-	c.debugger.EventBus.Subscribe(EventStepOut, func(event DebuggerEvent, data EventData) {
+	c.debugger.Signals.Connect(EventStepOut, func(event DebuggerEvent, data EventData) {
 		c.LogInfo("Step out")
 	})
 }

@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/diamondburned/gotk4-adwaita/pkg/adw"
-	"github.com/diamondburned/gotk4/pkg/glib/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 	. "github.com/emad-elsaid/debugger/structs"
 )
@@ -77,32 +76,20 @@ func (sb *Sidebar) setupWatchInput() {
 }
 
 func (sb *Sidebar) subscribeToEvents() {
-	sb.debugger.EventBus.Subscribe(EventWatchesChanged, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			sb.updateWatches()
-			return false
-		})
+	sb.debugger.Signals.Connect(EventWatchesChanged, func(event DebuggerEvent, data EventData) {
+		sb.updateWatches()
 	})
 
-	sb.debugger.EventBus.Subscribe(EventBreakpointsChanged, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			sb.updateBreakpoints()
-			return false
-		})
+	sb.debugger.Signals.Connect(EventBreakpointsChanged, func(event DebuggerEvent, data EventData) {
+		sb.updateBreakpoints()
 	})
 
-	sb.debugger.EventBus.Subscribe(EventStateChanged, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			sb.updateWatches()
-			return false
-		})
+	sb.debugger.Signals.Connect(EventStateChanged, func(event DebuggerEvent, data EventData) {
+		sb.updateWatches()
 	})
 
-	sb.debugger.EventBus.Subscribe(EventStackFrameChanged, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			sb.updateWatches()
-			return false
-		})
+	sb.debugger.Signals.Connect(EventStackFrameChanged, func(event DebuggerEvent, data EventData) {
+		sb.updateWatches()
 	})
 }
 

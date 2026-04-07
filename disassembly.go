@@ -5,7 +5,6 @@ import (
 
 	. "github.com/emad-elsaid/debugger/structs"
 
-	"github.com/diamondburned/gotk4/pkg/glib/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 	"github.com/go-delve/delve/pkg/proc"
 )
@@ -35,25 +34,16 @@ func NewDisassemblyPanel(debugger *Debugger) *DisassemblyPanel {
 }
 
 func (dp *DisassemblyPanel) subscribeToEvents() {
-	dp.debugger.EventBus.Subscribe(EventFileChanged, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			dp.disassemble()
-			return false
-		})
+	dp.debugger.Signals.Connect(EventFileChanged, func(event DebuggerEvent, data EventData) {
+		dp.disassemble()
 	})
 
-	dp.debugger.EventBus.Subscribe(EventStateChanged, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			dp.disassemble()
-			return false
-		})
+	dp.debugger.Signals.Connect(EventStateChanged, func(event DebuggerEvent, data EventData) {
+		dp.disassemble()
 	})
 
-	dp.debugger.EventBus.Subscribe(EventStackFrameChanged, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			dp.disassemble()
-			return false
-		})
+	dp.debugger.Signals.Connect(EventStackFrameChanged, func(event DebuggerEvent, data EventData) {
+		dp.disassemble()
 	})
 }
 

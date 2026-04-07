@@ -19,7 +19,7 @@ type Debugger struct {
 	*debugger.Debugger
 	State     DebuggerState
 	LastState *api.DebuggerState
-	EventBus  *UIEventBus
+	Signals   *SignalEmitter
 
 	// Project props
 	Path    string
@@ -62,7 +62,7 @@ func NewDebugger(bin string, args []string, runImmediately bool, test bool) (*De
 		Args:        args,
 		breakpoints: []*api.Breakpoint{},
 		Test:        test,
-		EventBus:    NewUIEventBus(),
+		Signals:     NewSignalEmitter(),
 	}
 
 	if err := d.InitDebugger(); err != nil {
@@ -180,7 +180,7 @@ func (d *Debugger) CreateBreakpoint(bp *api.Breakpoint) (*api.Breakpoint, error)
 
 	b, err := d.Debugger.CreateBreakpoint(bp, "", nil, false)
 	d.cacheBreakpoints()
-	d.EventBus.Emit(EventBreakpointsChanged, EventData{
+	d.Signals.Emit(EventBreakpointsChanged, EventData{
 		Breakpoint:          b,
 		BreakpointOperation: BreakpointCreated,
 	})
@@ -201,7 +201,7 @@ func (d *Debugger) AmendBreakpoint(bp *api.Breakpoint) error {
 
 	err := d.Debugger.AmendBreakpoint(bp)
 	d.cacheBreakpoints()
-	d.EventBus.Emit(EventBreakpointsChanged, EventData{
+	d.Signals.Emit(EventBreakpointsChanged, EventData{
 		Breakpoint:          bp,
 		BreakpointOperation: operation,
 	})
@@ -216,7 +216,7 @@ func (d *Debugger) ClearBreakpoint(bp *api.Breakpoint) (*api.Breakpoint, error) 
 
 	b, err := d.Debugger.ClearBreakpoint(bp)
 	d.cacheBreakpoints()
-	d.EventBus.Emit(EventBreakpointsChanged, EventData{
+	d.Signals.Emit(EventBreakpointsChanged, EventData{
 		Breakpoint:          b,
 		BreakpointOperation: BreakpointRemoved,
 	})
@@ -236,7 +236,7 @@ func (d *Debugger) ClearAllBreakpoints() error {
 	}
 
 	d.cacheBreakpoints()
-	d.EventBus.Emit(EventBreakpointsChanged, EventData{
+	d.Signals.Emit(EventBreakpointsChanged, EventData{
 		BreakpointOperation: BreakpointsAllCleared,
 	})
 
@@ -268,7 +268,7 @@ func (d *Debugger) EnableAllBreakpoints() error {
 
 	if modified {
 		d.cacheBreakpoints()
-		d.EventBus.Emit(EventBreakpointsChanged, EventData{BreakpointOperation: BreakpointsAllEnabled})
+		d.Signals.Emit(EventBreakpointsChanged, EventData{BreakpointOperation: BreakpointsAllEnabled})
 	}
 
 	return nil
@@ -294,7 +294,7 @@ func (d *Debugger) DisableAllBreakpoints() error {
 
 	if modified {
 		d.cacheBreakpoints()
-		d.EventBus.Emit(EventBreakpointsChanged, EventData{BreakpointOperation: BreakpointsAllDisabled})
+		d.Signals.Emit(EventBreakpointsChanged, EventData{BreakpointOperation: BreakpointsAllDisabled})
 	}
 
 	return nil
@@ -322,7 +322,7 @@ func (d *Debugger) SetFileLine(file string, line int) {
 	d.File = file
 	d.Line = line
 	d.InvalidateState()
-	d.EventBus.Emit(EventFileChanged, EventData{File: file, Line: line})
+	d.Signals.Emit(EventFileChanged, EventData{File: file, Line: line})
 }
 
 func (d *Debugger) InvalidateState() {
@@ -367,13 +367,13 @@ func (d *Debugger) Command(cmd *api.DebuggerCommand) {
 	}
 
 	// Emit state changed event
-	d.EventBus.Emit(EventStateChanged, EventData{State: state})
+	d.Signals.Emit(EventStateChanged, EventData{State: state})
 
 	// If the process exited load it again into the debugger.
 	// this allow the user to manipulate the breakpoints after exiting the program
 	if state.Exited {
 		d.Debugger.Restart(false, "", false, []string{}, [3]string{}, false)
-		d.EventBus.Emit(EventProcessExited, EventData{State: state})
+		d.Signals.Emit(EventProcessExited, EventData{State: state})
 	}
 }
 
@@ -404,7 +404,7 @@ func (d *Debugger) Continue() {
 		return
 	}
 
-	d.EventBus.Emit(EventContinue, EventData{})
+	d.Signals.Emit(EventContinue, EventData{})
 	go d.Command(&api.DebuggerCommand{Name: api.Continue})
 }
 
@@ -413,25 +413,43 @@ func (d *Debugger) Stop() {
 }
 
 func (d *Debugger) Restart() error {
-	d.Stop()
+	slog.Debug("Restart: starting")
 
-	// First try rebuilding manually using our Compile method
-	if err := d.Compile(); err != nil {
-		log.Printf("Error compiling during restart: %s", err)
-		d.EventBus.Emit(EventError, EventData{Error: err})
-		return err
+	// If the process is running, stop it and wait for halt to complete
+	if d.IsRunning() {
+		slog.Debug("Restart: stopping running process")
+		d.Stop()
+		slog.Debug("Restart: process stopped")
 	}
 
+	// First try rebuilding manually using our Compile method
+	slog.Debug("Restart: compiling")
+	if err := d.Compile(); err != nil {
+		log.Printf("Error compiling during restart: %s", err)
+		d.Signals.Emit(EventError, EventData{Error: err})
+		return err
+	}
+	slog.Debug("Restart: compilation complete")
+
 	// Now restart without rebuild (rebuild=false) since we already compiled
+	slog.Debug("Restart: calling Delve restart")
 	_, err := d.Debugger.Restart(false, "", false, []string{}, [3]string{}, false)
 	if err != nil {
 		log.Printf("Error restarting process: %s", err)
-		d.EventBus.Emit(EventError, EventData{Error: err})
+		d.Signals.Emit(EventError, EventData{Error: err})
 		return err
 	}
+	slog.Debug("Restart: Delve restart complete")
 
-	d.EventBus.Emit(EventProcessRestarted, EventData{})
-	go d.Continue()
+	// Emit event in a goroutine to avoid blocking on event handlers
+	go func() {
+		slog.Debug("Restart: emitting EventProcessRestarted")
+		d.Signals.Emit(EventProcessRestarted, EventData{})
+		slog.Debug("Restart: calling Continue")
+		d.Continue()
+		slog.Debug("Restart: complete")
+	}()
+
 	return nil
 }
 
@@ -440,7 +458,7 @@ func (d *Debugger) StepOut() {
 		return
 	}
 
-	d.EventBus.Emit(EventStepOut, EventData{})
+	d.Signals.Emit(EventStepOut, EventData{})
 	go d.Command(&api.DebuggerCommand{Name: api.StepOut})
 }
 
@@ -449,7 +467,7 @@ func (d *Debugger) Next() {
 		return
 	}
 
-	d.EventBus.Emit(EventStepOver, EventData{})
+	d.Signals.Emit(EventStepOver, EventData{})
 	go d.Command(&api.DebuggerCommand{Name: api.Next})
 }
 
@@ -458,7 +476,7 @@ func (d *Debugger) Step() {
 		return
 	}
 
-	d.EventBus.Emit(EventStep, EventData{})
+	d.Signals.Emit(EventStep, EventData{})
 	go d.Command(&api.DebuggerCommand{Name: api.Step})
 }
 
@@ -586,7 +604,7 @@ func (d *Debugger) RunningLines() []int {
 
 func (d *Debugger) CreateWatch(expr string) {
 	d.WatchesExpr = append(d.WatchesExpr, expr)
-	d.EventBus.Emit(EventWatchesChanged, EventData{})
+	d.Signals.Emit(EventWatchesChanged, EventData{})
 }
 
 func (d *Debugger) DeleteWatch(expr string) {
@@ -597,5 +615,5 @@ func (d *Debugger) DeleteWatch(expr string) {
 		}
 	}
 	d.WatchesExpr = nWatches
-	d.EventBus.Emit(EventWatchesChanged, EventData{})
+	d.Signals.Emit(EventWatchesChanged, EventData{})
 }

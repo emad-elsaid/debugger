@@ -6,7 +6,6 @@ import (
 	"html"
 
 	"github.com/diamondburned/gotk4-adwaita/pkg/adw"
-	"github.com/diamondburned/gotk4/pkg/glib/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
@@ -62,11 +61,8 @@ func (bp *BreakpointsPanel) connectButtons() {
 }
 
 func (bp *BreakpointsPanel) subscribeToEvents() {
-	bp.debugger.EventBus.Subscribe(EventBreakpointsChanged, func(event DebuggerEvent, data EventData) {
-		glib.IdleAdd(func() bool {
-			bp.updateBreakpoints()
-			return false
-		})
+	bp.debugger.Signals.Connect(EventBreakpointsChanged, func(event DebuggerEvent, data EventData) {
+		bp.updateBreakpoints()
 	})
 }
 

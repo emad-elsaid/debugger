@@ -226,7 +226,7 @@ func (w *DebugWindow) connectButtonSignals() {
 	})
 
 	w.restartBtn.ConnectClicked(func() {
-		w.debugger.Restart()
+		go w.debugger.Restart()
 	})
 
 	w.stepBtn.ConnectClicked(func() {
@@ -321,7 +321,7 @@ func (w *DebugWindow) setupShortcuts() {
 		switch keyval {
 		case gdk.KEY_F5:
 			if ctrl && shift {
-				w.debugger.Restart()
+				go w.debugger.Restart()
 			} else {
 				w.debugger.Continue()
 			}
@@ -344,7 +344,7 @@ func (w *DebugWindow) setupShortcuts() {
 }
 
 func (w *DebugWindow) subscribeToEvents() {
-	w.debugger.EventBus.Subscribe(EventStateChanged, func(event DebuggerEvent, data EventData) {
+	w.debugger.Signals.Connect(EventStateChanged, func(event DebuggerEvent, data EventData) {
 		// Update UI based on state changes
 		if data.State != nil {
 			// Update button sensitivity based on running state
@@ -357,15 +357,15 @@ func (w *DebugWindow) subscribeToEvents() {
 		}
 	})
 
-	w.debugger.EventBus.Subscribe(EventProcessExited, func(event DebuggerEvent, data EventData) {
+	w.debugger.Signals.Connect(EventProcessExited, func(event DebuggerEvent, data EventData) {
 		// Show notification or update status
 	})
 
-	w.debugger.EventBus.Subscribe(EventFileChanged, func(event DebuggerEvent, data EventData) {
+	w.debugger.Signals.Connect(EventFileChanged, func(event DebuggerEvent, data EventData) {
 		// Update source view (will be implemented in Phase 2)
 	})
 
-	w.debugger.EventBus.Subscribe(EventError, func(event DebuggerEvent, data EventData) {
+	w.debugger.Signals.Connect(EventError, func(event DebuggerEvent, data EventData) {
 		if data.Error != nil {
 			w.showErrorDialog("Error", data.Error.Error())
 		}
